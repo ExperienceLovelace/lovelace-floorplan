@@ -1,6 +1,6 @@
 /*
  Floorplan for Home Assistant
- Version: 1.0.7.57
+ Version: 1.1.0
  By Petar Kozul
  https://github.com/pkozul/ha-floorplan
 */
@@ -131,15 +131,15 @@
     /* Loading resources
     /***************************************************************************************************************************/
 
-    loadConfig(configUrl) {
-      if (typeof configUrl === 'string') {
-      return this.fetchTextResource(configUrl, false)
+    loadConfig(config) {
+      if (typeof config === 'string') {
+      return this.fetchTextResource(config, false)
         .then(config => {
           return Promise.resolve(YAML.parse(config));
         });
       }
       else {
-        return Promise.resolve(configUrl);
+        return Promise.resolve(config);
       }
     }
 
