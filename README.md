@@ -28,9 +28,7 @@ Then you can start adding floorplan cards to your Lovelace config:
           stylesheet: /local/floorplan/config/home/home.css
           rules:
             - entities:
-                - binary_sensor.front_hallway
-                - binary_sensor.salon
-                - binary_sensor.back_hallway
+                - binary_sensor.living_room
                 - binary_sensor.kitchen
               states:
                 - state: 'off'
