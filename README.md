@@ -2,19 +2,22 @@
 
 Floorplan for Lovelace is here!
 
-To get started, add this to the `resources` section of your Lovelace config:
+To get started, copy the following files to the `www` folder of your Home Assistant config:
+
+- https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan-card.js
+- https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/lib/floorplan.js
+- https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/lib/yaml.min.js
+- https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/lib/jquery-3.4.1.min.js
+
+Add the following to the `resources` section of your Lovelace config:
 
 ```
 resources:
   - type: module
     url: /local/floorplan/floorplan-card.js
-  - type: module
-    url: /local/floorplan/lib/yaml.min.js
-  - type: module
-    url: /local/floorplan/lib/jquery-3.4.1.min.js
 ```
 
-Then you can start adding floorplan cards to your UI:
+Then you can start adding floorplan cards to your Lovelace config:
 
 ```
   - cards:
