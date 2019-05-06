@@ -9,6 +9,11 @@ To get started, copy the following files to the `www/floorplan` folder of your H
 - [lib/yaml.min.js](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/lib/yaml.min.js)
 - [lib/jquery-3.4.1.min.js](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/lib/jquery-3.4.1.min.js)
 
+You'll then need an SVG file of your floorplan, and a CSS file for styling. You can use the samples provided to get started:
+
+- [config/home/home.svg](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/config/home/home.svg)
+- [config/home/home.css](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/config/home/home.css)
+
 Add the following to the `resources` section of your Lovelace config:
 
 ```
