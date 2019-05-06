@@ -1,7 +1,3 @@
-import './lib/yaml.min.js';
-import './lib/jquery-3.4.1.min.js';
-import './lib/floorplan.js';
-
 class FloorplanCard extends Polymer.Element {
   constructor() {
     super();
@@ -16,9 +12,49 @@ class FloorplanCard extends Polymer.Element {
       });
   }
 
-  initCard() {
-    if (this.children.length) return;
+  ensureFloorplan(hass) {
+    if (this.initialized) return Promise.resolve();
+    this.initialized = true;
 
+    try {
+      return this.loadScripts()
+        .then(() => {
+          this.initCard();
+
+          this.floorplan = new Floorplan();
+
+          const options = {
+            doc: this,
+            hass: hass,
+            openMoreInfo: this.openMoreInfo.bind(this),
+            setIsLoading: this.setIsLoading.bind(this),
+            config: (this.config && this.config.config) || this.config,
+          };
+
+          return this.floorplan.init(options)
+            .then(() => {
+              this.setIsLoading(false);
+            });
+        });
+    }
+    catch(err) {
+      this.setIsLoading(false);
+      this.logError(err);
+      return Promise.reject(err);
+    }
+  }
+
+  loadScripts() {
+    const promises = [];
+
+    promises.push(this.loadScript('/local/floorplan/lib/floorplan.js'));
+    promises.push(this.loadScript('/local/floorplan/lib/yaml.min.js'));
+    promises.push(this.loadScript('/local/floorplan/lib/jquery-3.4.1.min.js'));
+
+    return Promise.all(promises);
+  }
+
+  initCard() {
     const card = document.createElement('ha-card');
     card.innerHTML = `
       <div id="log">
@@ -86,32 +122,23 @@ class FloorplanCard extends Polymer.Element {
     this.config = config;
   }
 
-  ensureFloorplan(hass) {
-    if (this.floorplan) return Promise.resolve();
-
-    this.initCard();
-
-    try {
-      this.floorplan = new Floorplan();
-
-      const options = {
-        doc: this,
-        hass: hass,
-        openMoreInfo: this.openMoreInfo.bind(this),
-        setIsLoading: this.setIsLoading.bind(this),
-        config: (this.config && this.config.config) || this.config,
+  loadScript(scriptUrl) {
+    return new Promise((resolve, reject) => {
+      let script = document.createElement('script');
+      script.src = this.cacheBuster(scriptUrl);
+      script.onload = () => {
+        return resolve();
+      };
+      script.onerror = (err) => {
+        reject(new URIError(`${err.target.src}`));
       };
 
-      return this.floorplan.init(options)
-        .then(() => {
-          this.setIsLoading(false);
-        });
-    }
-    catch(err) {
-      this.setIsLoading(false);
-      this.logError(err);
-      return Promise.reject(err);
-    }
+      this.appendChild(script);
+    });
+  }
+
+  cacheBuster(url) {
+    return `${url}${(url.indexOf('?') >= 0) ? '&' : '?'}_=${new Date().getTime()}`;
   }
 
   openMoreInfo(entityId) {
