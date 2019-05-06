@@ -2,7 +2,7 @@
 
 Floorplan for Lovelace is here!
 
-To get started, copy the following files to the `www/floorplan` folder of your Home Assistant config (right-click on each file to save them directly):
+To get started, copy the following files to the `www/floorplan` folder of your Home Assistant config (right-click on each file to save directly to disk):
 
 - [floorplan-card.js](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/floorplan-card.js)
 - [lib/floorplan.js](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/lib/floorplan.js)
