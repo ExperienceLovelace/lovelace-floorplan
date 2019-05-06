@@ -34,8 +34,4 @@ Then you can start adding floorplan cards to your UI:
                   class: info-background
                 - state: 'on'
                   class: warning-background
-              state_transitions:
-                - from_state: 'on'
-                  to_state: 'off'
-                  duration: 10
 ```
