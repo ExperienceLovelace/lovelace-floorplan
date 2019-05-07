@@ -1,6 +1,6 @@
 import * as jQuery_ from './lib/jquery-3.4.1.min.js';
 import * as yaml_ from '/local/floorplan/lib/yaml.min.js';
-import * as floorplan_ from '/local/floorplan/lib/floorplan.js?v=1.1.1';
+import * as floorplan_ from '/local/floorplan/lib/floorplan.js?v=1.1.2';
 
 class FloorplanCard extends HTMLElement {
   constructor() {
