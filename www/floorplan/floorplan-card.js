@@ -1,72 +1,85 @@
-class FloorplanCard extends Polymer.Element {
+import * as jQuery_ from './lib/jquery-3.4.1.min.js';
+import * as yaml_ from '/local/floorplan/lib/yaml.min.js';
+import * as floorplan_ from '/local/floorplan/lib/floorplan.js?v=1.1.1';
+
+class FloorplanCard extends HTMLElement {
   constructor() {
     super();
+
+    this.attachShadow({ mode: 'open' });
+    this.setIsLoading(true);
+  }
+
+  setConfig(config) {
+    this.config = config;
+
+    this.initCard(config);
   }
 
   set hass(hass) {
-    this.ensureFloorplan(hass)
-      .then(() => {
-        this.floorplan.hassChanged(hass);
-      })
-      .catch((err) => {
-      });
+    if (!this.config) return;
+
+    (this.floorplan ? Promise.resolve() : this.initFloorplan(hass, this.config))
+      .then(() => this.floorplan.hassChanged(hass));
   }
 
-  ensureFloorplan(hass) {
-    if (this.initialized) return Promise.resolve();
-    this.initialized = true;
+  initFloorplan(hass, config) {
+    this.floorplan = new Floorplan();
 
-    try {
-      return this.loadScripts()
-        .then(() => {
-          this.initCard();
+    const options = {
+      root: this.shadowRoot,
+      hass: hass,
+      openMoreInfo: this.openMoreInfo.bind(this),
+      setIsLoading: this.setIsLoading.bind(this),
+      config: (config && config.config) || config,
+    };
 
-          this.floorplan = new Floorplan();
-
-          const options = {
-            doc: this,
-            hass: hass,
-            openMoreInfo: this.openMoreInfo.bind(this),
-            setIsLoading: this.setIsLoading.bind(this),
-            config: (this.config && this.config.config) || this.config,
-          };
-
-          return this.floorplan.init(options)
-            .then(() => {
-              this.setIsLoading(false);
-            });
-        });
-    }
-    catch(err) {
-      this.setIsLoading(false);
-      this.logError(err);
-      return Promise.reject(err);
-    }
+    return this.floorplan.init(options)
+      .then(() => this.setIsLoading(false));
   }
 
-  loadScripts() {
-    const promises = [];
-
-    promises.push(this.loadScript('/local/floorplan/lib/floorplan.js'));
-    promises.push(this.loadScript('/local/floorplan/lib/yaml.min.js'));
-    promises.push(this.loadScript('/local/floorplan/lib/jquery-3.4.1.min.js'));
-
-    return Promise.all(promises);
-  }
-
-  initCard() {
-    const card = document.createElement('ha-card');
-    card.innerHTML = `
-      <div id="log">
-        <a href="#" onclick="$(this).siblings('ul').html('').parent().css('display', 'none');">Clear log</a>
-        <ul></ul>
-      </div>
-
-      <div id="floorplan" on-tap="stopPropagation"></div>
-    `;
+  initCard(config) {
+    const root = this.shadowRoot;
+    if (root.lastChild) root.removeChild(root.lastChild);
 
     const style = document.createElement('style');
-    style.textContent = `
+    style.textContent = this.getStyle();
+    root.appendChild(style);
+
+    const card = document.createElement('ha-card');
+    card.header = config.title;
+    root.appendChild(card);
+
+    const container = document.createElement('div');
+    container.id = 'container';
+    card.appendChild(container);
+
+    const floorplan = document.createElement('div');
+    floorplan.id = 'floorplan';
+    container.appendChild(floorplan);
+
+    const log = document.createElement('div');
+    log.id = 'log';
+    container.appendChild(log);
+
+    const link = document.createElement('a');
+    link.setAttribute('href', '#');
+    link.text = 'Clear log';
+    log.appendChild(link);
+    link.onclick = function () { $(this).siblings('ul').html('').parent().css('display', 'none'); };
+
+    const list = document.createElement('ul');
+    log.appendChild(list);
+
+    this.log = log;
+  }
+
+  getStyle() {
+    return `
+      #container {
+        text-align: center;
+      }
+
       #floorplan {
         width: 100%;
         height: 100%;
@@ -93,6 +106,7 @@ class FloorplanCard extends Polymer.Element {
       #log ul {
         list-style-type: none;
         padding-left: 0px;
+        text-align: left;
       }
 
       .error {
@@ -111,34 +125,6 @@ class FloorplanCard extends Polymer.Element {
         color: #000000;
       }
     `;
-    card.appendChild(style);
-
-    this.log = $("#log", card)[0];
-
-    this.appendChild(card);
-  }
-
-  setConfig(config) {
-    this.config = config;
-  }
-
-  loadScript(scriptUrl) {
-    return new Promise((resolve, reject) => {
-      let script = document.createElement('script');
-      script.src = this.cacheBuster(scriptUrl);
-      script.onload = () => {
-        return resolve();
-      };
-      script.onerror = (err) => {
-        reject(new URIError(`${err.target.src}`));
-      };
-
-      this.appendChild(script);
-    });
-  }
-
-  cacheBuster(url) {
-    return `${url}${(url.indexOf('?') >= 0) ? '&' : '?'}_=${new Date().getTime()}`;
   }
 
   openMoreInfo(entityId) {
