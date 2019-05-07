@@ -19,7 +19,7 @@ Add the following to the `resources` section of your Lovelace config:
 ```
 resources:
   - type: module
-    url: /local/floorplan/floorplan-card.js
+    url: /local/floorplan/floorplan-card.js?v=1.1.1
 ```
 
 Then you can start adding floorplan cards to your Lovelace config:
