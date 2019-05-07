@@ -437,7 +437,7 @@
           const currentDateTime = new Date();
           this.timeDifferenceMs = currentDateTime.getTime() - lastEventFiredTime.getTime();
 
-          this.logDebug(`Client is ${(this.timeDifferenceMs >= 0) ? 'ahead of' : 'behind'} server by ${Math.abs(this.timeDifferenceMs)} miliseconds`);
+          this.logDebug('SYSTEM', `Client is ${(this.timeDifferenceMs >= 0) ? 'ahead of' : 'behind'} server by ${Math.abs(this.timeDifferenceMs)} miliseconds`);
         }
       });
     }
