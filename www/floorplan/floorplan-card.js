@@ -2,6 +2,12 @@ class FloorplanCard extends HTMLElement {
   constructor() {
     super();
 
+    this.isScriptsLoading = false;
+    this.isFloorplanLoading = false;
+
+    this.isScriptsLoaded = false;
+    this.isFloorplanLoaded = false;
+
     this.attachShadow({ mode: 'open' });
     this.setIsLoading(true);
   }
@@ -13,40 +19,51 @@ class FloorplanCard extends HTMLElement {
   }
 
   set hass(hass) {
-    if (!this.config) return;
+    if (!this.config || this.isScriptsLoading || this.isFloorplanLoading) return;
 
-    (this.initialized ? Promise.resolve() : this.initFloorplan(hass, this.config))
-      .then(() => this.floorplan.hassChanged(hass));
-  }
-
-  initFloorplan(hass, config) {
-    this.initialized = true;
-    
-    return this.loadScripts()
+    (this.isScriptsLoaded ? Promise.resolve() : this.loadScripts())
       .then(() => {
-        this.floorplan = new Floorplan();
-
-        const options = {
-          root: this.shadowRoot,
-          hass: hass,
-          openMoreInfo: this.openMoreInfo.bind(this),
-          setIsLoading: this.setIsLoading.bind(this),
-          config: (config && config.config) || config,
-        };
-
-        return this.floorplan.init(options)
-          .then(() => this.setIsLoading(false));
+        (this.floorplan ? Promise.resolve() : this.loadFloorplan(hass, this.config))
+          .then(() => this.floorplan.hassChanged(hass));
       });
   }
 
   loadScripts() {
+    this.isScriptsLoading = true;
+
     const promises = [];
 
     promises.push(this.loadScript('/local/floorplan/lib/floorplan.js'));
     promises.push(this.loadScript('/local/floorplan/lib/yaml.min.js'));
     promises.push(this.loadScript('/local/floorplan/lib/jquery-3.4.1.min.js'));
 
-    return Promise.all(promises);
+    return Promise.all(promises)
+      .then(() => {
+        this.isScriptsLoading = false;
+        this.isScriptsLoaded = true;
+      });
+  }
+
+  loadFloorplan(hass, config) {
+    this.isFloorplanLoading = true;
+
+    const floorplan = new Floorplan();
+
+    const options = {
+      root: this.shadowRoot,
+      hass: hass,
+      openMoreInfo: this.openMoreInfo.bind(this),
+      setIsLoading: this.setIsLoading.bind(this),
+      config: (config && config.config) || config,
+    };
+
+    return floorplan.init(options)
+      .then(() => {
+        this.setIsLoading(false);
+        this.floorplan = floorplan;
+        this.isFloorplanLoading = false;
+        this.isFloorplanLoaded = true;
+      });
   }
 
   initCard(config) {
