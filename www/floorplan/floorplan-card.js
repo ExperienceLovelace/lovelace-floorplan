@@ -1,7 +1,3 @@
-import * as jQuery_ from './lib/jquery-3.4.1.min.js';
-import * as yaml_ from '/local/floorplan/lib/yaml.min.js';
-import * as floorplan_ from '/local/floorplan/lib/floorplan.js?v=1.1.2';
-
 class FloorplanCard extends HTMLElement {
   constructor() {
     super();
@@ -19,23 +15,38 @@ class FloorplanCard extends HTMLElement {
   set hass(hass) {
     if (!this.config) return;
 
-    (this.floorplan ? Promise.resolve() : this.initFloorplan(hass, this.config))
+    (this.initialized ? Promise.resolve() : this.initFloorplan(hass, this.config))
       .then(() => this.floorplan.hassChanged(hass));
   }
 
   initFloorplan(hass, config) {
-    this.floorplan = new Floorplan();
+    this.initialized = true;
+    
+    return this.loadScripts()
+      .then(() => {
+        this.floorplan = new Floorplan();
 
-    const options = {
-      root: this.shadowRoot,
-      hass: hass,
-      openMoreInfo: this.openMoreInfo.bind(this),
-      setIsLoading: this.setIsLoading.bind(this),
-      config: (config && config.config) || config,
-    };
+        const options = {
+          root: this.shadowRoot,
+          hass: hass,
+          openMoreInfo: this.openMoreInfo.bind(this),
+          setIsLoading: this.setIsLoading.bind(this),
+          config: (config && config.config) || config,
+        };
 
-    return this.floorplan.init(options)
-      .then(() => this.setIsLoading(false));
+        return this.floorplan.init(options)
+          .then(() => this.setIsLoading(false));
+      });
+  }
+
+  loadScripts() {
+    const promises = [];
+
+    promises.push(this.loadScript('/local/floorplan/lib/floorplan.js'));
+    promises.push(this.loadScript('/local/floorplan/lib/yaml.min.js'));
+    promises.push(this.loadScript('/local/floorplan/lib/jquery-3.4.1.min.js'));
+
+    return Promise.all(promises);
   }
 
   initCard(config) {
@@ -154,6 +165,25 @@ class FloorplanCard extends HTMLElement {
     const node = options.node || this;
     node.dispatchEvent(event);
     return event;
+  }
+
+  loadScript(scriptUrl) {
+    return new Promise((resolve, reject) => {
+      let script = document.createElement('script');
+      script.src = this.cacheBuster(scriptUrl);
+      script.onload = () => {
+        return resolve();
+      };
+      script.onerror = (err) => {
+        reject(new URIError(`${err.target.src}`));
+      };
+
+      this.appendChild(script);
+    });
+  }
+
+  cacheBuster(url) {
+    return `${url}${(url.indexOf('?') >= 0) ? '&' : '?'}_=${new Date().getTime()}`;
   }
 }
 
