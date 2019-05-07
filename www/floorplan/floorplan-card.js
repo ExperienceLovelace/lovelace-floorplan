@@ -33,9 +33,9 @@ class FloorplanCard extends HTMLElement {
 
     const promises = [];
 
-    promises.push(this.loadScript('/local/floorplan/lib/floorplan.js'));
-    promises.push(this.loadScript('/local/floorplan/lib/yaml.min.js'));
-    promises.push(this.loadScript('/local/floorplan/lib/jquery-3.4.1.min.js'));
+    promises.push(this.loadScript('/local/floorplan/lib/floorplan.js'), false); // don't use cached version
+    promises.push(this.loadScript('/local/floorplan/lib/yaml.min.js'), true);
+    promises.push(this.loadScript('/local/floorplan/lib/jquery-3.4.1.min.js', true));
 
     return Promise.all(promises)
       .then(() => {
@@ -184,10 +184,10 @@ class FloorplanCard extends HTMLElement {
     return event;
   }
 
-  loadScript(scriptUrl) {
+  loadScript(scriptUrl, useCache) {
     return new Promise((resolve, reject) => {
       let script = document.createElement('script');
-      script.src = this.cacheBuster(scriptUrl);
+      script.src = useCache ? scriptUrl : this.cacheBuster(scriptUrl);
       script.onload = () => {
         return resolve();
       };
