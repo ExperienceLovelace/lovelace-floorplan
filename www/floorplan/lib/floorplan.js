@@ -1,6 +1,6 @@
 /*
  Floorplan for Home Assistant
- Version: 1.1.0
+ Version: 1.1.1
  By Petar Kozul
  https://github.com/pkozul/ha-floorplan
 */
@@ -13,12 +13,12 @@
   class Floorplan {
     constructor() {
       this.version = '1.0.7.57';
-      this.doc = {};
+      this.root = {};
       this.hass = {};
       this.openMoreInfo = () => { };
       this.setIsLoading = () => { };
       this.config = undefined;
-      this.timeDifference = undefined;
+      this.timeDifferenceMs = 0; // assume client and server perfectly in sync
       this.pageInfos = [];
       this.entityInfos = [];
       this.elementInfos = [];
@@ -45,7 +45,7 @@
     /***************************************************************************************************************************/
 
     init(options) {
-      this.doc = options.doc;
+      this.root = options.root;
       this.hass = options.hass;
       this.openMoreInfo = options.openMoreInfo;
       this.setIsLoading = options.setIsLoading;
@@ -133,10 +133,10 @@
 
     loadConfig(config) {
       if (typeof config === 'string') {
-      return this.fetchTextResource(config, false)
-        .then(config => {
-          return Promise.resolve(YAML.parse(config));
-        });
+        return this.fetchTextResource(config, false)
+          .then(config => {
+            return Promise.resolve(YAML.parse(config));
+          });
       }
       else {
         return Promise.resolve(config);
@@ -168,7 +168,7 @@
           reject(new URIError(`${err.target.src}`));
         };
 
-        this.doc.appendChild(script);
+        this.root.appendChild(script);
       });
     }
 
@@ -266,7 +266,7 @@
           const link = document.createElement('style');
           link.type = 'text/css';
           link.innerHTML = stylesheet;
-          this.doc.appendChild(link);
+          this.root.appendChild(link);
 
           const cssRules = this.getArray(link.sheet.cssRules);
           this.cssRules = this.cssRules.concat(cssRules);
@@ -297,11 +297,11 @@
             const contentElementId = masterPageInfo.config.master_page.content_element;
 
             if (pageInfo.config.page_id === masterPageId) {
-              $(this.doc).find('#floorplan').append(svg);
+              $(this.root).find('#floorplan').append(svg);
             }
             else {
-              const $masterPageElement = $(this.doc).find('#' + masterPageId);
-              const $contentElement = $(this.doc).find('#' + contentElementId);
+              const $masterPageElement = $(this.root).find('#' + masterPageId);
+              const $contentElement = $(this.root).find('#' + contentElementId);
 
               const height = Number.parseFloat($(svg).attr('height'));
               const width = Number.parseFloat($(svg).attr('width'));
@@ -320,7 +320,7 @@
             }
           }
           else {
-            $(this.doc).find('#floorplan').append(svg);
+            $(this.root).find('#floorplan').append(svg);
           }
 
           // Enable pan / zoom if enabled in config
@@ -435,7 +435,9 @@
         if (data.event && data.event.time_fired) {
           const lastEventFiredTime = new Date(data.event.time_fired);
           const currentDateTime = new Date();
-          this.timeDifference = currentDateTime.getTime() - lastEventFiredTime.getTime();
+          this.timeDifferenceMs = currentDateTime.getTime() - lastEventFiredTime.getTime();
+
+          this.logDebug(`Client is ${(this.timeDifferenceMs >= 0) ? 'ahead of' : 'behind'} server by ${Math.abs(this.timeDifferenceMs)} miliseconds`);
         }
       });
     }
@@ -1198,7 +1200,7 @@
     }
 
     handleEntityUpdateCss(entityInfo, isInitialLoad) {
-      if (!this.cssRules || !this.cssRules.length)  return;
+      if (!this.cssRules || !this.cssRules.length) return;
 
       for (let ruleInfo of entityInfo.ruleInfos) {
         for (let svgElementId in ruleInfo.svgElementInfos) {
@@ -1217,7 +1219,7 @@
       const entityState = this.hass.states[entityId];
       const svgElement = svgElementInfo.svgElement;
 
-      if (!entityState ) return;
+      if (!entityState) return;
 
       let wasTransitionApplied = false;
 
@@ -1233,56 +1235,49 @@
           const fromColor = this.getFill(fromStateConfig);
           const toColor = this.getFill(toStateConfig);
 
-          if (fromColor && toColor) {
-            if (remaining > 0) {
-              let transition = this.entityTransitions[entityId];
-              if (!transition) {
-                this.logDebug('TRANSITION', `${entityId} (created)`);
-                transition = {
-                  entityId: entityId,
-                  svgElementInfo: svgElementInfo,
-                  ruleInfo: ruleInfo,
-                  duration: transitionConfig.duration,
-                  fromStateConfig: fromStateConfig,
-                  toStateConfig: toStateConfig,
-                  fromColor: fromColor,
-                  toColor: toColor,
-                  startDateMs: undefined,
-                  endDateMs: undefined,
-                  isActive: false,
-                };
-                this.entityTransitions[entityId] = transition;
+          if (fromColor && toColor && (remaining > 0)) {
+            let transition = this.entityTransitions[entityId];
+            if (!transition) {
+              this.logDebug('TRANSITION', `${entityId} (created)`);
+              transition = {
+                entityId: entityId,
+                svgElementInfo: svgElementInfo,
+                ruleInfo: ruleInfo,
+                duration: transitionConfig.duration,
+                fromStateConfig: fromStateConfig,
+                toStateConfig: toStateConfig,
+                fromColor: fromColor,
+                toColor: toColor,
+                startDateMs: undefined,
+                endDateMs: undefined,
+                isActive: false,
+              };
+              this.entityTransitions[entityId] = transition;
+            }
+
+            // Assume the transition starts (or started) when the original state change occurred
+            transition.startDateMs = this.serverToLocalDate(new Date(entityState.last_changed)).getTime();
+            transition.endDateMs = transition.startDateMs + (transition.duration * 1000);
+
+            // If the transition is not currently running, kick it off
+            if (!transition.isActive) {
+              // If this state change just occurred, the transition starts as of now
+              if (!isInitialLoad) {
+                transition.startDateMs = (new Date()).getTime();
+                transition.endDateMs = transition.startDateMs + (transition.duration * 1000);
               }
 
-              // Assume the transition starts (or started) when the original state change occurred
-              transition.startDateMs = this.serverToLocalDate(new Date(entityState.last_changed)).getTime();
-              transition.endDateMs = transition.startDateMs + (transition.duration * 1000);
-
-              // If the transition is not currently running, kick it off
-              if (!transition.isActive) {
-                // If this state change just occurred, the transition starts as of now
-                if (!isInitialLoad) {
-                  transition.startDateMs = (new Date()).getTime();
-                  transition.endDateMs = transition.startDateMs + (transition.duration * 1000);
-                }
-
-                this.logDebug('TRANSITION', `${transition.entityId}: (start)`);
-                transition.isActive = true;
-                this.handleEntityTransition(transition);
-              }
-              else {
-                // If the transition is currently running, it will be extended with latest start / end times
-                this.logDebug('TRANSITION', `${transition.entityId} (continue)`);
-              }
+              this.logDebug('TRANSITION', `${transition.entityId}: (start)`);
+              transition.isActive = true;
+              this.handleEntityTransition(transition);
             }
             else {
-              this.setEntityStyle(svgElementInfo, svgElement, entityInfo, ruleInfo);
+              // If the transition is currently running, it will be extended with latest start / end times
+              this.logDebug('TRANSITION', `${transition.entityId} (continue)`);
             }
+
+            wasTransitionApplied = true;
           }
-          else {
-            this.setEntityStyle(svgElementInfo, svgElement, entityInfo, ruleInfo);
-          }
-          wasTransitionApplied = true;
         }
       }
 
@@ -1411,7 +1406,7 @@
       const entityId = entityInfo.entityId;
       const entityState = this.hass.states[entityId];
 
-      if (!entityState ) return;
+      if (!entityState) return;
 
       for (let ruleInfo of entityInfo.ruleInfos) {
         for (let svgElementId in ruleInfo.svgElementInfos) {
@@ -1486,20 +1481,12 @@
     }
 
     localToServerDate(localDate) {
-      let serverDateMs = localDate.getTime();
-      if (this.timeDifference >= 0)
-        serverDateMs -= this.timeDifference;
-      else
-        serverDateMs += Math.abs(this.timeDifference);
+      const serverDateMs = localDate.getTime() -= this.timeDifferenceMs;
       return new Date(serverDateMs);
     }
 
     serverToLocalDate(serverDate) {
-      let localDateMs = serverDate.getTime();
-      if (this.timeDifference >= 0)
-        localDateMs += Math.abs(this.timeDifference);
-      else
-        localDateMs -= this.timeDifference;
+      const localDateMs = serverDate.getTime() + this.timeDifferenceMs;
       return new Date(localDateMs);
     }
 
@@ -1519,8 +1506,8 @@
         return func(entityState, this.hass.states, this.hass, this.config, svgElement);
       }
       catch (err) {
-      //  this.logError('ERROR', entityId);
-      //  this.logError('ERROR', err);
+        //  this.logError('ERROR', entityId);
+        //  this.logError('ERROR', err);
       }
     }
 
@@ -1799,7 +1786,7 @@
 
       if ((!this.config && (level === 'error')) || isTargetLogLevel) {
         // Always log error messages that occur before the config has been loaded
-        const log = $(this.doc).find('#log');
+        const log = $(this.root).find('#log');
         $(log).find('ul').prepend(`<li class="${level}">${text}</li>`)
         $(log).css('display', 'block');
       }
