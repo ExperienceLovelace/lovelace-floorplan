@@ -23,7 +23,7 @@ class FloorplanCard extends HTMLElement {
 
     (this.isScriptsLoaded ? Promise.resolve() : this.loadScripts())
       .then(() => {
-        (this.floorplan ? Promise.resolve() : this.loadFloorplan(hass, this.config))
+        (this.isFloorplanLoaded ? Promise.resolve() : this.loadFloorplan(hass, this.config))
           .then(() => this.floorplan.hassChanged(hass));
       });
   }
