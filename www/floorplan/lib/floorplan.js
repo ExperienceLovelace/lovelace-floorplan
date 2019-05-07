@@ -1,6 +1,6 @@
 /*
  Floorplan for Home Assistant
- Version: 1.1.1
+ Version: 1.1.2
  By Petar Kozul
  https://github.com/pkozul/ha-floorplan
 */
@@ -1481,7 +1481,7 @@
     }
 
     localToServerDate(localDate) {
-      const serverDateMs = localDate.getTime() -= this.timeDifferenceMs;
+      const serverDateMs = localDate.getTime() - this.timeDifferenceMs;
       return new Date(serverDateMs);
     }
 
