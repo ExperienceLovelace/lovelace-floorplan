@@ -84,7 +84,7 @@ class FloorplanCard extends HTMLElement {
     container.id = 'container';
     card.appendChild(container);
 
-    const spinner = document.createElement('paper-spinner');
+    const spinner = document.createElement('paper-spinner-lite');
     container.appendChild(spinner);
 
     const floorplan = document.createElement('div');
@@ -119,14 +119,8 @@ class FloorplanCard extends HTMLElement {
         height: 100%;
       }
 
-      .loading-container {
-        text-align: center;
-        padding: 8px;
-      }
-
-      .loading {
-        height: 0px;
-        overflow: hidden;
+      paper-spinner-lite {
+        margin-bottom: 50px;
       }
 
       #log {
