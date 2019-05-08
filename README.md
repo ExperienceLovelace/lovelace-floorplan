@@ -41,3 +41,5 @@ Then you can start adding floorplan cards to your Lovelace config:
                 - state: 'on'
                   class: warning-background
 ```
+
+If you are using the Lovelace editor that is built into the user interface, click on the three dots in the upper-right corner of the screen and select `Configure UI`. Then click on the three dots again and select `Raw config editor`. Then you'll be able to add the resources and card described above.
