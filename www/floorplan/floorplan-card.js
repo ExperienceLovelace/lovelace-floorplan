@@ -9,13 +9,13 @@ class FloorplanCard extends HTMLElement {
     this.isFloorplanLoaded = false;
 
     this.attachShadow({ mode: 'open' });
-    this.setIsLoading(true);
   }
 
   setConfig(config) {
     this.config = config;
 
     this.initCard(config);
+    this.setIsLoading(true);
   }
 
   set hass(hass) {
@@ -24,7 +24,9 @@ class FloorplanCard extends HTMLElement {
     (this.isScriptsLoaded ? Promise.resolve() : this.loadScripts())
       .then(() => {
         (this.isFloorplanLoaded ? Promise.resolve() : this.loadFloorplan(hass, this.config))
-          .then(() => this.floorplan.hassChanged(hass));
+          .then(() => {
+            this.floorplan.hassChanged(hass);
+          });
       });
   }
 
@@ -82,6 +84,9 @@ class FloorplanCard extends HTMLElement {
     container.id = 'container';
     card.appendChild(container);
 
+    const spinner = document.createElement('paper-spinner');
+    container.appendChild(spinner);
+
     const floorplan = document.createElement('div');
     floorplan.id = 'floorplan';
     container.appendChild(floorplan);
@@ -100,6 +105,7 @@ class FloorplanCard extends HTMLElement {
     log.appendChild(list);
 
     this.log = log;
+    this.spinner = spinner;
   }
 
   getStyle() {
@@ -161,6 +167,15 @@ class FloorplanCard extends HTMLElement {
 
   setIsLoading(isLoading) {
     this.isLoading = isLoading;
+
+    if (this.isLoading) {
+      this.spinner.setAttribute('active', '');
+      this.spinner.style.display = 'inline-block';
+    }
+    else {
+      this.spinner.removeAttribute('active');
+      this.spinner.style.display = 'none';
+    }
   }
 
   logError(message) {
