@@ -460,13 +460,13 @@
           const pageInfo = this.pageInfos[key];
 
           $(pageInfo.svg).css('opacity', 1);
-          $(pageInfo.svg).css('display', pageInfo.isMaster || pageInfo.isDefault ? 'block' : 'none'); // Show the first page
+          $(pageInfo.svg).css('display', pageInfo.isMaster || pageInfo.isDefault ? 'initial' : 'none'); // Show the first page
         });
       }
       else {
         // Show the SVG
         $(this.config.svg).css('opacity', 1);
-        $(this.config.svg).css('display', 'block');
+        $(this.config.svg).css('display', 'initial');
       }
     }
 
@@ -1612,7 +1612,7 @@
               }
             });
 
-            $(targetPageInfo.svg).css('display', 'block');
+            $(targetPageInfo.svg).css('display', 'initial');
           }
           break;
 
