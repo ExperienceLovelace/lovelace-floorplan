@@ -1,6 +1,6 @@
 /*
  Floorplan for Home Assistant
- Version: 1.1.2
+ Version: 1.1.3
  By Petar Kozul
  https://github.com/pkozul/ha-floorplan
 */
@@ -147,11 +147,11 @@
       const promises = [];
 
       if (this.isOptionEnabled(this.config.pan_zoom)) {
-        promises.push(this.loadScript('/local/custom_ui/floorplan/lib/svg-pan-zoom.min.js'));
+        promises.push(this.loadScript('/local/floorplan/lib/svg-pan-zoom.min.js'));
       }
 
       if (this.isOptionEnabled(this.config.fully_kiosk)) {
-        promises.push(this.loadScript('/local/custom_ui/floorplan/lib/fully-kiosk.js'));
+        promises.push(this.loadScript('/local/floorplan/lib/fully-kiosk.js'));
       }
 
       return promises.length ? Promise.all(promises) : Promise.resolve();
@@ -193,10 +193,15 @@
             defaultPageInfo.isDefault = true;
           }
 
-          const svgPromises = [Promise.resolve()]
-            .concat(pageInfos.map(pageInfo => this.loadPageFloorplanSvg(pageInfo, masterPageInfo)));
+          return this.loadPageFloorplanSvg(masterPageInfo, masterPageInfo) // load master page first
+            .then(() => {
+              const nonMasterPages = pageInfos.filter(pageInfo => pageInfo !== masterPageInfo);
 
-          return Promise.all(svgPromises);
+              const svgPromises = [Promise.resolve()]
+                .concat(nonMasterPages.map(pageInfo => this.loadPageFloorplanSvg(pageInfo, masterPageInfo)));
+
+              return Promise.all(svgPromises);
+            });
         });
     }
 
@@ -455,13 +460,13 @@
           const pageInfo = this.pageInfos[key];
 
           $(pageInfo.svg).css('opacity', 1);
-          $(pageInfo.svg).css('display', pageInfo.isMaster || pageInfo.isDefault ? 'initial' : 'none'); // Show the first page
+          $(pageInfo.svg).css('display', pageInfo.isMaster || pageInfo.isDefault ? 'block' : 'none'); // Show the first page
         });
       }
       else {
         // Show the SVG
         $(this.config.svg).css('opacity', 1);
-        $(this.config.svg).css('display', 'initial');
+        $(this.config.svg).css('display', 'block');
       }
     }
 
@@ -1607,7 +1612,7 @@
               }
             });
 
-            $(targetPageInfo.svg).css('display', 'initial');
+            $(targetPageInfo.svg).css('display', 'block');
           }
           break;
 
