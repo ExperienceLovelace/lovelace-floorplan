@@ -1,18 +1,9 @@
-/*
- Floorplan for Home Assistant
- Version: 1.1.3
- By Petar Kozul
- https://github.com/pkozul/ha-floorplan
-*/
-
-'use strict';
-
 (function () {
   if (typeof window.Floorplan === 'function') return;
 
   class Floorplan {
     constructor() {
-      this.version = '1.0.7.57';
+      this.version = '1.1.0.1';
       this.root = {};
       this.hass = {};
       this.openMoreInfo = () => { };
@@ -1960,7 +1951,8 @@
     }
 
     cacheBuster(url) {
-      return `${url}${(url.indexOf('?') >= 0) ? '&' : '?'}_=${new Date().getTime()}`;
+      return url;
+      //return `${url}${(url.indexOf('?') >= 0) ? '&' : '?'}_=${new Date().getTime()}`;
     }
 
     debounce(func, wait, immediate) {
