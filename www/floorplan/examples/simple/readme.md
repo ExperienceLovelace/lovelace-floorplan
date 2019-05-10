@@ -8,7 +8,7 @@ This example demonstrates some basic features of Floorplan:
 - Buttons can be clicked to switch on/off fan and light entities
 - Live feed (image snapshot) is displayed from a generic camera
 
-![image](https://user-images.githubusercontent.com/2073827/57502800-b5f70500-7330-11e9-98ab-01b4ec6db123.png)
+![image](https://user-images.githubusercontent.com/2073827/57503614-2d7a6380-7334-11e9-825f-44c786fecb60.png)
 
 # 1) Copy files
 
