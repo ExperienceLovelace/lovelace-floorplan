@@ -3,7 +3,7 @@
 
   class Floorplan {
     constructor() {
-      this.version = '1.1.0.1';
+      this.version = '1.1.8';
       this.root = {};
       this.hass = {};
       this.openMoreInfo = () => { };
@@ -583,6 +583,7 @@
         for (let rule of config.rules) {
           rule.hover_over = (rule.hover_over === undefined) ? config.defaults.hover_over : rule.hover_over;
           rule.more_info = (rule.more_info === undefined) ? config.defaults.more_info : rule.more_info;
+          rule.propagate = (rule.propagate === undefined) ? config.defaults.propagate : rule.propagate;
         }
       }
 
@@ -626,10 +627,13 @@
           // Create a title element (to support hover over text)
           $svgElement.append(document.createElementNS('http://www.w3.org/2000/svg', 'title'));
 
-          $svgElement.off('click').on('click', this.onEntityClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: ruleInfo.rule }));
-          $svgElement.css('cursor', 'pointer');
+          if (ruleInfo.rule.action || (ruleInfo.rule.more_info !== false)) {
+            $svgElement.off('click').on('click', this.onEntityClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: ruleInfo.rule }));
+            $svgElement.css('cursor', 'pointer');
+          }
           $svgElement.addClass('ha-entity');
 
+          /*
           if ($svgElement.is('text') && ($svgElement[0].id === elementId)) {
             const backgroundSvgElement = svgElements.find(svgElement => svgElement.id === ($svgElement[0].id + '.background'));
             if (!backgroundSvgElement) {
@@ -640,6 +644,7 @@
               $(backgroundSvgElement).css('fill-opacity', 0);
             }
           }
+          */
         }
       }
     }
@@ -724,6 +729,7 @@
           $svgElement.off('click').on('click', this.onElementClick.bind({ instance: this, svgElementInfo: svgElementInfo, elementId: elementId, rule: rule }));
           $svgElement.css('cursor', 'pointer');
 
+          /*
           if ($svgElement.is('text') && ($svgElement[0].id === elementId)) {
             const backgroundSvgElement = svgElements.find(svgElement => svgElement.id === ($svgElement[0].id + '.background'));
             if (!backgroundSvgElement) {
@@ -734,6 +740,7 @@
               $(backgroundSvgElement).css('fill-opacity', 0);
             }
           }
+          */
 
           const actions = Array.isArray(rule.action) ? rule.action : [rule.action];
           for (let action of actions) {
@@ -788,7 +795,7 @@
       };
       ruleInfo.svgElementInfos[svgElement.id] = svgElementInfo;
 
-      this.addNestedSvgElementsToRule(svgElement, ruleInfo);
+//      this.addNestedSvgElementsToRule(svgElement, ruleInfo);
 
       return svgElementInfo;
     }
@@ -826,7 +833,7 @@
                 */
     }
 
-    addClass(entityId, svgElement, className) {
+    addClass(entityId, svgElement, className, propagate) {
       if ($(svgElement).hasClass('ha-leave-me-alone')) return;
 
       if (!$(svgElement).hasClass(className)) {
@@ -834,29 +841,34 @@
         $(svgElement).addClass(className);
 
         if ($(svgElement).is('text')) {
+          /*
           $(svgElement).parent().find(`[id="${entityId}.background"]`).each((i, rectElement) => {
             if (!$(rectElement).hasClass(className + '-background')) {
               $(rectElement).addClass(className + '-background');
             }
           });
+          */
         }
       }
 
-      $(svgElement).find('*').each((i, svgNestedElement) => {
-        if (!$(svgNestedElement).hasClass('ha-leave-me-alone')) {
-          if (!$(svgNestedElement).hasClass(className)) {
-            $(svgNestedElement).addClass(className);
+      if (propagate) {
+        $(svgElement).find('*').each((i, svgNestedElement) => {
+          if (!$(svgNestedElement).hasClass('ha-leave-me-alone')) {
+            if (!$(svgNestedElement).hasClass(className)) {
+              $(svgNestedElement).addClass(className);
+            }
           }
-        }
-      });
+        });
+      }
     }
 
-    removeClasses(entityId, svgElement, classes) {
+    removeClasses(entityId, svgElement, classes, propagate) {
       for (let className of classes) {
         if ($(svgElement).hasClass(className)) {
           this.logDebug('CLASS', `${entityId} (removing class: ${className})`);
           $(svgElement).removeClass(className);
 
+          /*
           if ($(svgElement).is('text')) {
             $(svgElement).parent().find(`[id="${entityId}.background"]`).each((i, rectElement) => {
               if ($(rectElement).hasClass(className + '-background')) {
@@ -864,12 +876,15 @@
               }
             });
           }
+          */
 
-          $(svgElement).find('*').each((i, svgNestedElement) => {
-            if ($(svgNestedElement).hasClass(className)) {
-              $(svgNestedElement).removeClass(className);
-            }
-          });
+          if (propagate) {
+            $(svgElement).find('*').each((i, svgNestedElement) => {
+              if ($(svgNestedElement).hasClass(className)) {
+                $(svgNestedElement).removeClass(className);
+              }
+            });
+          }
         }
       }
     }
@@ -1090,6 +1105,7 @@
         }
       }
 
+      /*
       if (!svgElementInfo.alreadyHadBackground) {
         const rect = $(svgElement).parent().find(`[id="${entityId}.background"]`);
         if (rect.length) {
@@ -1108,6 +1124,7 @@
           }
         }
       }
+      */
     }
 
     handleEntityUpdateImage(entityId, ruleInfo, svgElementInfo) {
@@ -1340,7 +1357,7 @@
           }
         }
 
-        this.addClass(entityId, svgElement, targetClass);
+        this.addClass(entityId, svgElement, targetClass, ruleInfo.rule.propagate);
       }
     }
 
@@ -1671,11 +1688,9 @@
       const actionService = this.getActionService(action, entityId, svgElement);
       const actionData = this.getActionData(action, entityId, svgElement);
 
-      /*
       if (!actionData.entity_id && entityId) {
         actionData.entity_id = entityId;
       }
-      */
 
       this.hass.callService(this.getDomain(actionService), this.getService(actionService), actionData);
     }
