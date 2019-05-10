@@ -139,7 +139,7 @@ Then add the following to your Lovelace configuration:
               text_template: '${entity.state}'
             - entity: camera.new_york_broadway
               image_template: '${entity.attributes.entity_picture}'
-              image_refresh_interval: 5
+              image_refresh_interval: 20
             - entities:
                 - binary_sensor.main_bedroom
                 - binary_sensor.living_area
