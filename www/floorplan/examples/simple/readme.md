@@ -1,5 +1,7 @@
 # Simple Floorplan example #
 
+![image](https://user-images.githubusercontent.com/2073827/57502800-b5f70500-7330-11e9-98ab-01b4ec6db123.png)
+
 To run this example, add the following entities to your Home Assistant configuration:
 
 ```
