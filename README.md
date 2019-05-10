@@ -15,7 +15,7 @@ To get started, copy the following files to the `www/floorplan` folder of your H
 
 ### 2) Floorplan image
 
-You'll then need an SVG file of your floorplan, and a CSS file for styling. You can use the samples provided to get started. Copy them to the `www/floorplan/examples/simple` folder your Home Assistant installation:
+You'll then need an SVG file of your floorplan, and a CSS file for styling. You can use the samples provided to get started. Copy them to the `www/floorplan/examples/simple` folder of your Home Assistant installation:
 
 - [examples/simple/simple.svg](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/examples/simple/simple.svg)
 - [examples/simple/simple.css](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/examples/simple/simple.css)
