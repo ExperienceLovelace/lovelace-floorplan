@@ -1,6 +1,25 @@
 # Simple Floorplan example #
 
+This example demonstrates some basic features of Floorplan:
+
+- Rooms change colour when binary sensors are triggered
+- Fan spins when fan entity is switched on
+- Light bulb changes colour when light entity is switched on
+- Buttons can be clicked to switch on/off fan and light entities
+- Live feed (image snapshot) is displayed from a generic camera
+
 ![image](https://user-images.githubusercontent.com/2073827/57502800-b5f70500-7330-11e9-98ab-01b4ec6db123.png)
+
+# 1) Copy files
+
+To run this example, copy the following files to the `www/floorplan/examples/simple` folder of your Home Assistant configuration:
+
+- [simple.svg](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/examples/simple/simple.svg)
+- [simple.css](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/examples/simple/simple.css)
+- [light_on.svg](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/examples/simple/light_on.svg)
+- [light_off.css](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/examples/simple/light_off.css)
+
+## 2) Create entities
 
 To run this example, add the following entities to your Home Assistant configuration:
 
@@ -70,6 +89,8 @@ automation:
           topic: 'binary_sensor/double_garage'
           payload: '{% if ((now().second % 10) > 4) and ((now().second % 2) <= 6) %}ON{% else %}OFF{% endif %}'
 ```
+
+# Add to Lovelace
 
 Then add the following to your Lovelace configuration:
 
