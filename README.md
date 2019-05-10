@@ -60,6 +60,6 @@ Note: If you're using the Lovelace editor that is built into the user interface,
 
 ### 4) Use the example
 
-To get started with a full working example, check out the link below:
+To get started with a fully working example, check out the link below:
 
 [Simple Floorplan example](https://github.com/pkozul/lovelace-floorplan/tree/master/www/floorplan/examples/simple)
