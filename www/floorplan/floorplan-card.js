@@ -2,7 +2,7 @@ class FloorplanCard extends HTMLElement {
   constructor() {
     super();
 
-    this.version = "1.1.7";
+    this.version = "1.1.8";
 
     this.isScriptsLoading = false;
     this.isFloorplanLoading = false;
@@ -114,11 +114,6 @@ class FloorplanCard extends HTMLElement {
     return `
       #container {
         text-align: center;
-      }
-
-      #floorplan {
-        width: 100%;
-        height: 100%;
       }
 
       paper-spinner-lite {
