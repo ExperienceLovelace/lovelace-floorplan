@@ -90,7 +90,7 @@ automation:
           payload: '{% if ((now().second % 10) > 4) and ((now().second % 2) <= 6) %}ON{% else %}OFF{% endif %}'
 ```
 
-# Add to Lovelace
+## 3) Add to Lovelace
 
 Then add the following to your Lovelace configuration:
 
