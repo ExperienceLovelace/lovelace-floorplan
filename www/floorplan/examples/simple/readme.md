@@ -8,7 +8,7 @@ This example demonstrates some basic features of Floorplan:
 - Buttons can be clicked to switch on/off fan and light entities
 - Live feed (image snapshot) is displayed from a generic camera
 
-![image](https://user-images.githubusercontent.com/2073827/57503614-2d7a6380-7334-11e9-825f-44c786fecb60.png)
+![image](https://user-images.githubusercontent.com/2073827/57587697-6e4cc500-754c-11e9-9eda-68e9aa9e6ccd.png)
 
 # 1) Copy files
 
@@ -97,7 +97,7 @@ Then add the following to your Lovelace configuration:
 ```
   - cards:
       - config:
-          image: /local/floorplan/examples/simple/simple.svg?v=1.1.8
+          image: /local/floorplan/examples/simple/simple.svg?v=1.1.10
           log_level: error
           rules:
             - action:
@@ -106,7 +106,6 @@ Then add the following to your Lovelace configuration:
               entity: light.double_garage
               image_template: '/local/floorplan/examples/simple/light_${entity.state}.svg'
               more_info: false
-              propagate: true
             - action:
                 service: homeassistant.toggle
               class_template: 'background-${entity.state}'
@@ -121,11 +120,11 @@ Then add the following to your Lovelace configuration:
                 service: homeassistant.toggle
               entity: switch.living_area_fan
               more_info: false
-              propagate: true
             - entity: switch.living_area_fan
               more_info: false
+              propagate: false
               states:
-                - class: spinning
+                - class: 'spinning'
                   state: 'on'
             - action:
                 service: homeassistant.toggle
@@ -138,8 +137,8 @@ Then add the following to your Lovelace configuration:
               entity: switch.living_area_fan
               text_template: '${entity.state}'
             - entity: camera.new_york_broadway
+              image_refresh_interval: 5
               image_template: '${entity.attributes.entity_picture}'
-              image_refresh_interval: 20
             - entities:
                 - binary_sensor.main_bedroom
                 - binary_sensor.living_area
@@ -149,11 +148,11 @@ Then add the following to your Lovelace configuration:
                   from_state: 'on'
                   to_state: 'off'
               states:
-                - class: info-background
+                - class: 'binary-sensor-off'
                   state: 'off'
-                - class: warning-background
+                - class: 'binary-sensor-on'
                   state: 'on'
-          stylesheet: /local/floorplan/examples/simple/simple.css?v=1.1.8
+          stylesheet: /local/floorplan/examples/simple/simple.css?v=1.1.10
         title: Simple Floorplan
         type: 'custom:floorplan-card'
     icon: 'mdi:floor-plan'
