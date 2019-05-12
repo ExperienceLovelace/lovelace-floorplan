@@ -58,9 +58,9 @@ You can then start adding floorplan cards to your Lovelace config. Under `entiti
 
 Note: If you're using the Lovelace editor that is built into the user interface, click on the three dots in the upper-right corner of the screen and select `Configure UI`. Then click on the three dots again and select `Raw config editor`. Then you'll be able to add the resources and card described above.
 
-### 4) Try the examples
+### 4) Try some examples
 
 To get started with some fully working examples, try some of the floorplans below:
 
-- [Simple Floorplan example](https://github.com/pkozul/lovelace-floorplan/tree/master/www/floorplan/examples/simple)
-- [Ring doorbell example](https://github.com/pkozul/lovelace-floorplan/tree/master/www/floorplan/examples/ring)
+- [Simple Floorplan](https://github.com/pkozul/lovelace-floorplan/tree/master/www/floorplan/examples/simple)
+- [Ring doorbell](https://github.com/pkozul/lovelace-floorplan/tree/master/www/floorplan/examples/ring)
