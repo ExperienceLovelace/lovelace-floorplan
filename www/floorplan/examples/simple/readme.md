@@ -10,7 +10,7 @@ This example demonstrates some basic features of Floorplan:
 
 ![image](https://user-images.githubusercontent.com/2073827/57587697-6e4cc500-754c-11e9-9eda-68e9aa9e6ccd.png)
 
-# 1) Copy files
+## 1) Copy files
 
 To run this example, copy the following files to the `www/floorplan/examples/simple` folder of your Home Assistant configuration:
 
