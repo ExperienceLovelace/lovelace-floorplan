@@ -37,18 +37,18 @@ You can then start adding floorplan cards to your Lovelace config. Under `entiti
 ```
   - cards:
       - config:
-          image: /local/floorplan/examples/simple/simple.svg?v=1.1.8
+          image: /local/floorplan/examples/simple/simple.svg?v=1.1.10
           rules:
             - entities:
                 - binary_sensor.main_bedroom
                 - binary_sensor.living_area
                 - binary_sensor.double_garage
               states:
-                - class: info-background
+                - class: 'binary-sensor-off'
                   state: 'off'
-                - class: warning-background
+                - class: 'binary-sensor-on'
                   state: 'on'
-          stylesheet: /local/floorplan/examples/simple/simple.css?v=1.1.8
+          stylesheet: /local/floorplan/examples/simple/simple.css?v=1.1.10
         title: Simple Floorplan
         type: 'custom:floorplan-card'
     icon: 'mdi:floor-plan'
