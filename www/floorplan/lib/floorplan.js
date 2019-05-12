@@ -3,7 +3,7 @@
 
   class Floorplan {
     constructor() {
-      this.version = '1.1.8';
+      this.version = '1.1.9';
       this.root = {};
       this.hass = {};
       this.openMoreInfo = () => { };
@@ -851,7 +851,7 @@
         }
       }
 
-      if (propagate) {
+      if (propagate || (propagate === undefined)) {
         $(svgElement).find('*').each((i, svgNestedElement) => {
           if (!$(svgNestedElement).hasClass('ha-leave-me-alone')) {
             if (!$(svgNestedElement).hasClass(className)) {
@@ -878,7 +878,7 @@
           }
           */
 
-          if (propagate) {
+          if (propagate || (propagate === undefined)) {
             $(svgElement).find('*').each((i, svgNestedElement) => {
               if ($(svgNestedElement).hasClass(className)) {
                 $(svgNestedElement).removeClass(className);
