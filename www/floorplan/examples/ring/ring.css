@@ -15,7 +15,11 @@ svg, svg * {
 
 /* Ring doorbell */
 
-.ring-doorbell-ringing {
+.ring-motion {
+  fill: #F9D27C !important;
+}
+
+.ring-ding {
   stroke: #379FD4;
   stroke-width: 5;
   stroke-linecap: round;
