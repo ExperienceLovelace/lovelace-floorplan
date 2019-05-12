@@ -29,7 +29,7 @@ Add the following to the `resources:` section of your Lovelace config.
 ```
 resources:
   - type: module
-    url: /local/floorplan/floorplan-card.js?v=1.1.8
+    url: /local/floorplan/floorplan-card.js?v=1.1.10
 ```
 
 You can then start adding floorplan cards to your Lovelace config. Under `entities:`, make sure to add the entity IDs which you want to use in the floorplan:
