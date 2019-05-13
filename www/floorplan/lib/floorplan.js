@@ -3,7 +3,7 @@
 
   class Floorplan {
     constructor() {
-      this.version = '1.1.9';
+      this.version = '1.1.11';
       this.root = {};
       this.hass = {};
       this.openMoreInfo = () => { };
@@ -795,7 +795,7 @@
       };
       ruleInfo.svgElementInfos[svgElement.id] = svgElementInfo;
 
-//      this.addNestedSvgElementsToRule(svgElement, ruleInfo);
+      //      this.addNestedSvgElementsToRule(svgElement, ruleInfo);
 
       return svgElementInfo;
     }
@@ -1775,22 +1775,24 @@
     log(level, message) {
       const text = `${this.formatDate(new Date())} ${level.toUpperCase()} ${message}`;
 
-      switch (level) {
-        case 'error':
-          console.error(text);
-          break;
+      if (this.config && this.config.debug && (this.config.debug !== false)) {
+        switch (level) {
+          case 'error':
+            console.error(text);
+            break;
 
-        case 'warning':
-          console.warn(text);
-          break;
+          case 'warning':
+            console.warn(text);
+            break;
 
-        case 'error':
-          console.info(text);
-          break;
+          case 'error':
+            console.info(text);
+            break;
 
-        default:
-          console.log(text);
-          break;
+          default:
+            console.log(text);
+            break;
+        }
       }
 
       const isTargetLogLevel = this.logLevels && this.logLevels.length && (this.logLevels.indexOf(level) >= 0);
