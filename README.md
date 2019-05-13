@@ -29,7 +29,7 @@ Add the following to the `resources:` section of your Lovelace config.
 ```
 resources:
   - type: module
-    url: /local/floorplan/floorplan-card.js?v=1.1.12
+    url: /local/floorplan/floorplan-card.js?v=1.1.13
 ```
 
 You can then start adding floorplan cards to your Lovelace config. Under `entities:`, make sure to add the entity IDs which you want to use in the floorplan:
@@ -37,7 +37,7 @@ You can then start adding floorplan cards to your Lovelace config. Under `entiti
 ```
   - cards:
       - config:
-          image: /local/floorplan/examples/simple/simple.svg?v=1.1.12
+          image: /local/floorplan/examples/simple/simple.svg?v=1.1.13
           rules:
             - entities:
                 - binary_sensor.main_bedroom
@@ -48,7 +48,7 @@ You can then start adding floorplan cards to your Lovelace config. Under `entiti
                   state: 'off'
                 - class: 'binary-sensor-on'
                   state: 'on'
-          stylesheet: /local/floorplan/examples/simple/simple.css?v=1.1.12
+          stylesheet: /local/floorplan/examples/simple/simple.css?v=1.1.13
         title: Simple Floorplan
         type: 'custom:floorplan-card'
     icon: 'mdi:floor-plan'

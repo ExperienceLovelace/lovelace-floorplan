@@ -3,7 +3,7 @@
 
   class Floorplan {
     constructor() {
-      this.version = '1.1.12';
+      this.version = '1.1.13';
       this.root = {};
       this.hass = {};
       this.openMoreInfo = () => { };
@@ -832,36 +832,42 @@
                 */
     }
 
-    addClass(entityId, svgElement, className, propagate) {
-      if ($(svgElement).hasClass('ha-leave-me-alone')) return;
+    addClasses(entityId, svgElement, classes, propagate) {
+      if (!classes || !classes.length) return;
 
-      if (!$(svgElement).hasClass(className)) {
-        this.logDebug('CLASS', `${entityId} (adding class: ${className})`);
-        $(svgElement).addClass(className);
+      for (let className of classes) {
+        if ($(svgElement).hasClass('ha-leave-me-alone')) return;
 
-        if ($(svgElement).is('text')) {
-          /*
-          $(svgElement).parent().find(`[id="${entityId}.background"]`).each((i, rectElement) => {
-            if (!$(rectElement).hasClass(className + '-background')) {
-              $(rectElement).addClass(className + '-background');
+        if (!$(svgElement).hasClass(className)) {
+          this.logDebug('CLASS', `${entityId} (adding class: ${className})`);
+          $(svgElement).addClass(className);
+
+          if ($(svgElement).is('text')) {
+            /*
+            $(svgElement).parent().find(`[id="${entityId}.background"]`).each((i, rectElement) => {
+              if (!$(rectElement).hasClass(className + '-background')) {
+                $(rectElement).addClass(className + '-background');
+              }
+            });
+            */
+          }
+        }
+
+        if (propagate || (propagate === undefined)) {
+          $(svgElement).find('*').each((i, svgNestedElement) => {
+            if (!$(svgNestedElement).hasClass('ha-leave-me-alone')) {
+              if (!$(svgNestedElement).hasClass(className)) {
+                $(svgNestedElement).addClass(className);
+              }
             }
           });
-          */
         }
-      }
-
-      if (propagate || (propagate === undefined)) {
-        $(svgElement).find('*').each((i, svgNestedElement) => {
-          if (!$(svgNestedElement).hasClass('ha-leave-me-alone')) {
-            if (!$(svgNestedElement).hasClass(className)) {
-              $(svgNestedElement).addClass(className);
-            }
-          }
-        });
       }
     }
 
     removeClasses(entityId, svgElement, classes, propagate) {
+      if (!classes || !classes.length) return;
+
       for (let className of classes) {
         if ($(svgElement).hasClass(className)) {
           this.logDebug('CLASS', `${entityId} (removing class: ${className})`);
@@ -1225,15 +1231,24 @@
       }
     }
 
+    getStateConfigClasses(stateConfig) { // support class: or classes:
+      if (!stateConfig) return [];
+      if (Array.isArray(stateConfig.class)) return stateConfig.class;
+      if (typeof stateConfig.class === "string") return stateConfig.class.split(" ").map(x => x.trim());
+      if (Array.isArray(stateConfig.classes)) return stateConfig.classes;
+      if (typeof stateConfig.classes === "string") return stateConfig.classes.split(" ").map(x => x.trim());
+      return [];
+    }
+
     handleUpdateCss(entityInfo, svgElementInfo, ruleInfo) {
       const entityId = entityInfo.entityId;
       const svgElement = svgElementInfo.svgElement;
 
-      let targetClass = undefined;
+      let targetClasses = [];
       const obsoleteClasses = [];
 
       if (ruleInfo.rule.class_template) {
-        targetClass = this.evaluate(ruleInfo.rule.class_template, entityId, svgElement);
+        targetClasses = this.evaluate(ruleInfo.rule.class_template, entityId, svgElement).split(" ");
       }
 
       // Get the config for the current state
@@ -1241,16 +1256,15 @@
         const entityState = this.hass.states[entityId];
 
         const stateConfig = ruleInfo.rule.states.find(stateConfig => (stateConfig.state === entityState.state));
-        if (stateConfig && stateConfig.class) {
-          targetClass = stateConfig.class;
-        }
+        targetClasses = this.getStateConfigClasses(stateConfig);
 
         // Remove any other previously-added state classes
         for (let otherStateConfig of ruleInfo.rule.states) {
           if (!stateConfig || (otherStateConfig.state !== stateConfig.state)) {
-            if (otherStateConfig.class && (otherStateConfig.class !== targetClass) && (otherStateConfig.class !== 'ha-entity') && $(svgElement).hasClass(otherStateConfig.class)) {
-              if (svgElementInfo.originalClasses.indexOf(otherStateConfig.class) < 0) {
-                obsoleteClasses.push(otherStateConfig.class);
+            const otherStateClasses = this.getStateConfigClasses(otherStateConfig);
+            for (let otherStateClass of otherStateClasses) {
+              if (otherStateClass && (targetClasses.indexOf(otherStateClass) < 0) && (otherStateClass !== 'ha-entity') && $(svgElement).hasClass(otherStateClass) && (svgElementInfo.originalClasses.indexOf(otherStateClass) < 0)) {
+                obsoleteClasses.push(otherStateClass);
               }
             }
           }
@@ -1258,55 +1272,43 @@
       }
       else {
         if (svgElement.classList) {
-          for (let otherClassName of this.getArray(svgElement.classList)) {
-            if ((otherClassName !== targetClass) && (otherClassName !== 'ha-entity')) {
-              if (svgElementInfo.originalClasses.indexOf(otherClassName) < 0) {
-                obsoleteClasses.push(otherClassName);
-              }
+          for (let otherClass of this.getArray(svgElement.classList)) {
+            if ((targetClasses.indexOf(otherClass) < 0) && (otherClass !== 'ha-entity') && $(svgElement).hasClass(otherClass) && (svgElementInfo.originalClasses.indexOf(otherClass) < 0)) {
+              obsoleteClasses.push(otherClass);
             }
           }
         }
       }
 
       // Remove any obsolete classes from the entity
-      if (obsoleteClasses.length) {
-        //this.logDebug(`${entityId}: Removing obsolete classes: ${obsoleteClasses.join(', ')}`);
-        this.removeClasses(entityId, svgElement, obsoleteClasses);
-      }
+      //this.logDebug(`${entityId}: Removing obsolete classes: ${obsoleteClasses.join(', ')}`);
+      this.removeClasses(entityId, svgElement, obsoleteClasses, ruleInfo.rule.propagate);
 
-      // Add the target class to the entity
-      if (targetClass && !$(svgElement).hasClass(targetClass)) {
-        this.addClass(entityId, svgElement, targetClass, ruleInfo.rule.propagate);
-      }
+      // Add the target classes to the entity
+      this.addClasses(entityId, svgElement, targetClasses, ruleInfo.rule.propagate);
     }
 
     handleUpdateElementCss(svgElementInfo, ruleInfo) {
       const entityId = svgElementInfo.entityId;
       const svgElement = svgElementInfo.svgElement;
 
-      let targetClass = undefined;
+      let targetClasses = undefined;
       if (ruleInfo.rule.class_template) {
-        targetClass = this.evaluate(ruleInfo.rule.class_template, entityId, svgElement);
+        targetClasses = this.evaluate(ruleInfo.rule.class_template, entityId, svgElement).split(" ");
       }
 
       const obsoleteClasses = [];
-      for (let otherClassName of this.getArray(svgElement.classList)) {
-        if ((otherClassName !== targetClass) && (otherClassName !== 'ha-entity')) {
-          if (svgElementInfo.originalClasses.indexOf(otherClassName) < 0) {
-            obsoleteClasses.push(otherClassName);
-          }
+      for (let otherClass of this.getArray(svgElement.classList)) {
+        if ((targetClasses.indexOf(otherClass) < 0) && (otherClass !== 'ha-entity') && $(svgElement).hasClass(otherClass) && (svgElementInfo.originalClasses.indexOf(otherClass) < 0)) {
+          obsoleteClasses.push(otherClass);
         }
       }
 
       // Remove any obsolete classes from the entity
-      if (obsoleteClasses.length) {
-        this.removeClasses(entityId, svgElement, obsoleteClasses);
-      }
+      this.removeClasses(entityId, svgElement, obsoleteClasses, ruleInfo.rule.propagate);
 
       // Add the target class to the entity
-      if (targetClass && !$(svgElement).hasClass(targetClass)) {
-        this.addClass(entityId, svgElement, targetClass);
-      }
+      this.addClasses(entityId, svgElement, targetClasses, ruleInfo.rule.propagate);
     }
 
     handleEntityUpdateLastMotionCss(entityInfo) {
@@ -1322,18 +1324,16 @@
           const svgElementInfo = ruleInfo.svgElementInfos[svgElementId];
           const svgElement = svgElementInfo.svgElement;
 
+          const stateConfigClasses = this.getStateConfigClasses(this.lastMotionConfig);
+
           if (this.hass.states[this.lastMotionConfig.entity] &&
             (entityState.attributes.friendly_name === this.hass.states[this.lastMotionConfig.entity].state)) {
-            if (!$(svgElement).hasClass(this.lastMotionConfig.class)) {
-              //this.logDebug(`${entityId}: Adding last motion class '${this.lastMotionConfig.class}'`);
-              $(svgElement).addClass(this.lastMotionConfig.class);
-            }
+            //this.logDebug(`${entityId}: Adding last motion class '${this.lastMotionConfig.class}'`);
+            this.addClasses(entityId, svgElement, stateConfigClasses, ruleInfo.propagate);
           }
           else {
-            if ($(svgElement).hasClass(this.lastMotionConfig.class)) {
-              //this.logDebug(`${entityId}: Removing last motion class '${this.lastMotionConfig.class}'`);
-              $(svgElement).removeClass(this.lastMotionConfig.class);
-            }
+            //this.logDebug(`${entityId}: Removing last motion class '${this.lastMotionConfig.class}'`);
+            this.removeClasses(entityId, svgElement, stateConfigClasses, ruleInfo.propagate);
           }
         }
       }
@@ -1708,16 +1708,21 @@
     getStroke(stateConfig) {
       let stroke = undefined;
 
+      const stateConfigClasses = this.getStateConfigClasses(stateConfig);
+
       for (let cssRule of this.cssRules) {
-        if (cssRule.selectorText && cssRule.selectorText.indexOf(`.${stateConfig.class}`) >= 0) {
-          if (cssRule.style && cssRule.style.stroke) {
-            if (cssRule.style.stroke[0] === '#') {
-              stroke = cssRule.style.stroke;
+        for (let stateConfigClass of stateConfigClasses) {
+          if (cssRule.selectorText && cssRule.selectorText.indexOf(`.${stateConfigClass}`) >= 0) {
+            if (cssRule.style && cssRule.style.stroke) {
+              if (cssRule.style.stroke[0] === '#') {
+                stroke = cssRule.style.stroke;
+              }
+              else {
+                const rgb = cssRule.style.stroke.substring(4).slice(0, -1).split(',').map(x => parseInt(x));
+                stroke = `#${rgb[0].toString(16)[0]}${rgb[1].toString(16)[0]}${rgb[2].toString(16)[0]}`;
+              }
             }
-            else {
-              const rgb = cssRule.style.stroke.substring(4).slice(0, -1).split(',').map(x => parseInt(x));
-              stroke = `#${rgb[0].toString(16)[0]}${rgb[1].toString(16)[0]}${rgb[2].toString(16)[0]}`;
-            }
+            break;
           }
         }
       }
@@ -1728,16 +1733,22 @@
     getFill(stateConfig) {
       let fill = undefined;
 
+      const stateConfigClasses = this.getStateConfigClasses(stateConfig);
+
       for (let cssRule of this.cssRules) {
-        if (cssRule.selectorText && cssRule.selectorText.indexOf(`.${stateConfig.class}`) >= 0) {
-          if (cssRule.style && cssRule.style.fill) {
-            if (cssRule.style.fill[0] === '#') {
-              fill = cssRule.style.fill;
+        for (let stateConfigClass of stateConfigClasses) {
+          if (cssRule.selectorText && cssRule.selectorText.indexOf(`.${stateConfigClass}`) >= 0) {
+            if (cssRule.style && cssRule.style.fill) {
+              if (cssRule.style.fill[0] === '#') {
+                fill = cssRule.style.fill;
+              }
+              else {
+                const rgb = cssRule.style.fill.substring(4).slice(0, -1).split(',').map(x => parseInt(x));
+                fill = `#${rgb[0].toString(16)}${rgb[1].toString(16)}${rgb[2].toString(16)}`;
+              }
             }
-            else {
-              const rgb = cssRule.style.fill.substring(4).slice(0, -1).split(',').map(x => parseInt(x));
-              fill = `#${rgb[0].toString(16)}${rgb[1].toString(16)}${rgb[2].toString(16)}`;
-            }
+
+            break;
           }
         }
       }
