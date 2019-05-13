@@ -49,6 +49,7 @@ svg, svg * {
 
 .binary-sensor-off {
   fill: #7CB1F9 !important;
+  transition: fill 5s ease;
 }
 
 /* Buttons */
