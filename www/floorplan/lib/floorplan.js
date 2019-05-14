@@ -3,7 +3,7 @@
 
   class Floorplan {
     constructor() {
-      this.version = '1.1.13';
+      this.version = '1.1.14';
       this.root = {};
       this.hass = {};
       this.openMoreInfo = () => { };
@@ -1435,7 +1435,11 @@
     }
 
     onActionClick(svgElementInfo, entityId, elementId, rule) {
-      if (!rule || !rule.action) {
+      let entityInfo = this.entityInfos[entityId];
+      const actionRuleInfo = entityInfo && entityInfo.ruleInfos.find(ruleInfo => ruleInfo.rule.action);
+      const actionRule = rule.action ? rule : (actionRuleInfo ? actionRuleInfo.rule : undefined);
+
+      if (!rule || !actionRule) {
         if (entityId && (rule.more_info !== false)) {
           this.openMoreInfo(entityId);
         }
@@ -1446,7 +1450,7 @@
 
       const svgElement = svgElementInfo.svgElement;
 
-      const actions = Array.isArray(rule.action) ? rule.action : [rule.action];
+      const actions = Array.isArray(actionRule.action) ? actionRule.action : [actionRule.action];
       for (let action of actions) {
         if (action.service || action.service_template) {
           const actionService = this.getActionService(action, entityId, svgElement);
@@ -1466,7 +1470,7 @@
       }
 
       if (!calledServiceCount) {
-        if (entityId && (rule.more_info !== false)) {
+        if (entityId && (actionRule.more_info !== false)) {
           this.openMoreInfo(entityId);
         }
       }

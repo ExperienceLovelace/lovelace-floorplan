@@ -97,7 +97,7 @@ Then add the following to your Lovelace configuration:
 ```
   - cards:
       - config:
-          image: /local/floorplan/examples/simple/simple.svg?v=1.1.13
+          image: /local/floorplan/examples/simple/simple.svg?v=1.1.14
           log_level: error
           rules:
             - action:
@@ -152,7 +152,7 @@ Then add the following to your Lovelace configuration:
                   state: 'off'
                 - class: 'binary-sensor-on'
                   state: 'on'
-          stylesheet: /local/floorplan/examples/simple/simple.css?v=1.1.13
+          stylesheet: /local/floorplan/examples/simple/simple.css?v=1.1.14
         title: Simple Floorplan
         type: 'custom:floorplan-card'
     icon: 'mdi:floor-plan'
