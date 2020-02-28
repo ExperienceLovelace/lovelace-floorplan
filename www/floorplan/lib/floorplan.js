@@ -58,7 +58,7 @@
             return Promise.resolve();
           }
 
-          this.config = config;
+          this.config = Object.assign({}, config);
 
           return this.loadLibraries()
             .then(() => {
