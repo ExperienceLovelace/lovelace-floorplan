@@ -14,7 +14,7 @@ class FloorplanCard extends HTMLElement {
   }
 
   setConfig(config) {
-    this.config = config;
+    this.config = JSON.parse(JSON.stringify(config));
 
     this.initCard(config);
     this.setIsLoading(true);
