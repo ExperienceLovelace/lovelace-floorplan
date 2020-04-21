@@ -40,6 +40,7 @@ class FloorplanCard extends HTMLElement {
     promises.push(this.loadScript(`/local/floorplan/lib/floorplan.js?v=${this.version}`, true));
     promises.push(this.loadScript('/local/floorplan/lib/yaml.min.js', true));
     promises.push(this.loadScript('/local/floorplan/lib/jquery-3.4.1.min.js', true));
+    promises.push(this.loadScript('/local/floorplan/lib/jquery.longclick-1.0.js', true));
 
     return Promise.all(promises)
       .then(() => {
@@ -193,8 +194,8 @@ class FloorplanCard extends HTMLElement {
   loadScript(scriptUrl, useCache) {
     return new Promise((resolve, reject) => {
       let script = document.createElement('script');
-      script.async = true;
-      script.src = useCache ? scriptUrl : this.cacheBuster(scriptUrl);
+      script.async = false;
+      script.src = scriptUrl; //useCache ? scriptUrl : this.cacheBuster(scriptUrl);
       script.onload = () => resolve();
       script.onerror = (err) => reject(new URIError(`${err.target.src}`));
       this.appendChild(script);
