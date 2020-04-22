@@ -195,7 +195,7 @@ class FloorplanCard extends HTMLElement {
     return new Promise((resolve, reject) => {
       let script = document.createElement('script');
       script.async = false;
-      script.src = scriptUrl; //useCache ? scriptUrl : this.cacheBuster(scriptUrl);
+      script.src = useCace ? scriptUrl : this.cacheBuster(scriptUrl);
       script.onload = () => resolve();
       script.onerror = (err) => reject(new URIError(`${err.target.src}`));
       this.appendChild(script);
