@@ -398,13 +398,17 @@
             .attr('x', svgElementInfo.originalBBox.x)
             .attr('y', svgElementInfo.originalBBox.y);
 
-          $(svgElement).find('*').append(document.createElementNS('http://www.w3.org/2000/svg', 'title'))
-            .mayTriggerLongClicks().off('shortClick')
-            .mayTriggerLongClicks().off('longClick')
+          $(svgElement).find('*').append(document.createElementNS('http://www.w3.org/2000/svg', 'title')).off('shortClick')
             .mayTriggerLongClicks().on('shortClick', this.onEntityClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: rule }))
-            .mayTriggerLongClicks().on('longClick', this.onEntityClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: rule }))
             .css('cursor', 'pointer')
             .addClass('ha-entity');
+
+           if (rule && rule.long_click) {
+             $(svgElement).mayTriggerLongClicks().off('longClick');
+             $(svgElement).mayTriggerLongClicks().on('longClick', this.onEntityLongClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: rule }));
+           }
+
+
           svgElementInfo.svgElement = this.replaceElement(svgElementInfo.svgElement, svgElement);
 
           return Promise.resolve(svgElement);
@@ -453,6 +457,23 @@
     }
 
     initPageDisplay() {
+      if (this.config.preload_cards) {
+        const preloadCard = type => window.loadCardHelpers()
+           .then(({ createCardElement }) => createCardElement({type}))
+
+        for (let card of this.config.preload_cards) {
+          preloadCard(card);
+        }
+      }
+      if (this.config.preload_rows) {
+        const preloadRow = type => window.loadCardHelpers()
+           .then(({ createRowElement }) => createRowElement({type}))
+
+        for (let row of this.config.preload_rows) {
+          preloadRow(row);
+        }
+      }
+
       if (this.config.pages) {
         Object.keys(this.pageInfos).map(key => {
           const pageInfo = this.pageInfos[key];
@@ -635,11 +656,11 @@
           $svgElement.append(document.createElementNS('http://www.w3.org/2000/svg', 'title'));
 
           if (ruleInfo.rule.action || (ruleInfo.rule.more_info !== false)) {
-            $svgElement.mayTriggerLongClicks().on('shortClick', this.onEntityClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: ruleInfo.rule }));
+            $svgElement.mayTriggerLongClicks().off('shortClick').on('shortClick', this.onEntityClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: ruleInfo.rule }));
             $svgElement.css('cursor', 'pointer');
           }
           if (ruleInfo.rule.long_click) {
-            $svgElement.mayTriggerLongClicks().on('longClick', this.onEntityLongClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: ruleInfo.rule }));
+            $svgElement.mayTriggerLongClicks().off('longClick').on('longClick', this.onEntityLongClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: ruleInfo.rule }));
             $svgElement.css('cursor', 'pointer');
           }
 
@@ -738,8 +759,7 @@
 
           const $svgElement = $(svgElementInfo.svgElement);
 
-          $svgElement.mayTriggerLongClicks().off('shortClick');
-          $svgElement.mayTriggerLongClicks().on('shortClick', this.onElementClick.bind({ instance: this, svgElementInfo: svgElementInfo, elementId: elementId, rule: rule }));
+          $svgElement.mayTriggerLongClicks().off('shortClick').on('shortClick', this.onElementClick.bind({ instance: this, svgElementInfo: svgElementInfo, elementId: elementId, rule: rule }));
           $svgElement.css('cursor', 'pointer');
           if (ruleInfo.rule.long_click) {
             $svgElement.mayTriggerLongClicks().off('longClick');
@@ -849,6 +869,51 @@
                 .attr('width', $(svgElement).attr('width'))[0];
                 */
     }
+
+
+    getEntityInfo(id) {
+      const entityInfo = this.entityInfos[id];
+      const entityState = this.hass.states[id];
+      var result = "";
+      for (let ruleInfo of entityInfo.ruleInfos) {
+        if (ruleInfo.rule.hover_over !== false) {
+          for (let svgElementId in ruleInfo.svgElementInfos) {
+            const svgElementInfo = ruleInfo.svgElementInfos[svgElementId];
+
+            result = result + " " + this.getHoverOverText(svgElementInfo.svgElement, entityState);
+          }
+        }
+      }
+      return result;
+    }
+
+    getHoverOverText(element, entityState) {
+      const dateFormat = this.config.date_format ? this.config.date_format : 'DD-MMM-YYYY';
+      var result = "";
+      $(element).find('title').each((i, titleElement) => {
+        const lastChangedElapsed = (new Date()).getTime() - new Date(entityState.last_changed);
+        const lastChangedDate = this.formatDate(entityState.last_changed);
+
+        const lastUpdatedElapsed = (new Date()).getTime() - new Date(entityState.last_updated);
+        const lastUpdatedDate = this.formatDate(entityState.last_updated);
+
+        let titleText = `${entityState.attributes.friendly_name}\n`;
+        titleText += `State: ${entityState.state}\n\n`;
+
+        Object.keys(entityState.attributes).map(key => {
+          titleText += `${key}: ${entityState.attributes[key]}\n`;
+        });
+        titleText += '\n';
+
+        titleText += `Last changed: ${lastChangedDate}\n`;
+        titleText += `Last updated: ${lastUpdatedDate}`;
+        result = result + titleText;
+      });
+      return result;
+    }
+
+
+
     addClasses(entityId, svgElement, classes, propagate) {
       if (!classes || !classes.length) return;
 
@@ -1461,7 +1526,15 @@
     }
     
     longClick(e){
-      this.instance.onActionClick(this.svgElementInfo, this.entityId, this.elementId, null);
+      var modifiedRule = null;
+      if (this.rule.long_click && this.rule.long_click.service) {
+        modifiedRule = JSON.parse(JSON.stringify(this.rule));
+        modifiedRule.action.service = modifiedRule.long_click.service;
+        if (this.rule.long_click.data) { 
+         modifiedRule.action.data = modifiedRule.long_click.data; 
+       }
+      }
+      this.instance.onActionClick(this.svgElementInfo, this.entityId, this.elementId, modifiedRule);
     }    
 
     onEntityLongClick(e) {
