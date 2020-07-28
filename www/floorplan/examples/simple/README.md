@@ -92,72 +92,68 @@ automation:
 
 ## 3) Add to Lovelace
 
-Then add the following to your Lovelace configuration:
+Then add the following to Lovelace. Click the top right hamburger menu, 'Configure UI', bottom right orange '+' circle, click 'Manual', and paste in the yaml below:
 
 ```
-  - cards:
-      - config:
-          image: /local/floorplan/examples/simple/simple.svg?v=1.1.14
-          log_level: error
-          rules:
-            - action:
-                service: homeassistant.toggle
-              element: light.double_garage
-              entity: light.double_garage
-              image_template: '/local/floorplan/examples/simple/light_${entity.state}.svg'
-              more_info: false
-            - action:
-                service: homeassistant.toggle
-              class_template: 'background-${entity.state}'
-              element: light.double_garage.background
-              entity: light.double_garage
-            - action:
-                service: homeassistant.toggle
-              element: light.double_garage.text
-              entity: light.double_garage
-              text_template: '${entity.state}'
-            - action:
-                service: homeassistant.toggle
-              entity: switch.living_area_fan
-              more_info: false
-            - entity: switch.living_area_fan
-              more_info: false
-              propagate: false
-              states:
-                - class: 'spinning'
-                  state: 'on'
-            - action:
-                service: homeassistant.toggle
-              class_template: 'background-${entity.state}'
-              element: switch.living_area_fan.background
-              entity: switch.living_area_fan
-            - action:
-                service: homeassistant.toggle
-              element: switch.living_area_fan.text
-              entity: switch.living_area_fan
-              text_template: '${entity.state}'
-            - entity: camera.new_york_broadway
-              image_refresh_interval: 5
-              image_template: '${entity.attributes.entity_picture}'
-            - entities:
-                - binary_sensor.main_bedroom
-                - binary_sensor.living_area
-                - binary_sensor.double_garage
-              state_transitions:
-                - duration: 5
-                  from_state: 'on'
-                  to_state: 'off'
-              states:
-                - class: 'binary-sensor-off'
-                  state: 'off'
-                - class: 'binary-sensor-on'
-                  state: 'on'
-          stylesheet: /local/floorplan/examples/simple/simple.css?v=1.1.14
-        title: Simple Floorplan
-        type: 'custom:floorplan-card'
-    icon: 'mdi:floor-plan'
-    id: system
-    title: Floorplan
+config:
+  image: /local/floorplan/examples/simple/simple.svg?v=1.1.14
+  log_level: error
+  rules:
+    - action:
+        service: homeassistant.toggle
+      element: light.double_garage
+      entity: light.double_garage
+      image_template: '/local/floorplan/examples/simple/light_${entity.state}.svg'
+      more_info: false
+    - action:
+        service: homeassistant.toggle
+      class_template: 'background-${entity.state}'
+      element: light.double_garage.background
+      entity: light.double_garage
+    - action:
+        service: homeassistant.toggle
+      element: light.double_garage.text
+      entity: light.double_garage
+      text_template: '${entity.state}'
+    - action:
+        service: homeassistant.toggle
+      entity: switch.living_area_fan
+      more_info: false
+    - entity: switch.living_area_fan
+      more_info: false
+      propagate: false
+      states:
+        - class: spinning
+          state: 'on'
+    - action:
+        service: homeassistant.toggle
+      class_template: 'background-${entity.state}'
+      element: switch.living_area_fan.background
+      entity: switch.living_area_fan
+    - action:
+        service: homeassistant.toggle
+      element: switch.living_area_fan.text
+      entity: switch.living_area_fan
+      text_template: '${entity.state}'
+    - entity: camera.new_york_broadway
+      image_refresh_interval: 5
+      image_template: '${entity.attributes.entity_picture}'
+    - entities:
+        - binary_sensor.main_bedroom
+        - binary_sensor.living_area
+        - binary_sensor.double_garage
+      state_transitions:
+        - duration: 5
+          from_state: 'on'
+          to_state: 'off'
+      states:
+        - class: binary-sensor-off
+          state: 'off'
+        - class: binary-sensor-on
+          state: 'on'
+  stylesheet: /local/floorplan/examples/simple/simple.css?v=1.1.14
+title: Simple Floorplan
+type: 'custom:floorplan-card'
 ```
 
 You should then see the Floorplan card in action!
