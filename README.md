@@ -24,13 +24,12 @@ In the SVG file, rename the element IDs to match the entitiy IDs you have in you
 
 ### 3) Adding to Lovelace
 
-Add the following to the `resources:` section of your Lovelace config.
+Add the resource to lovelace by clicking 'Configuration\Lovelace Dashboards', click the 'Resources' tab, click the bottom right orange '+' button, and paste this into the 'url' field:
 
 ```
-resources:
-  - type: module
-    url: /local/floorplan/floorplan-card.js?v=1.1.14
+/local/floorplan/floorplan-card.js?v=1.1.14
 ```
+Select "Javascript Module" from the dropdown, then click 'Update'.
 
 You can then start adding floorplan cards to your Lovelace config. Under `entities:`, make sure to add the entity IDs which you want to use in the floorplan:
 
