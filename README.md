@@ -5,7 +5,7 @@ Floorplan for Lovelace is here!
 ## Installation
 
 ### HACS
-Just add the URI to HACS's custom 
+Just add the URI to HACS's as custom repository.
 
 ### Manual
 
