@@ -37,9 +37,9 @@ class FloorplanCard extends HTMLElement {
 
     const promises = [];
 
-    promises.push(this.loadScript(`/local/floorplan/lib/floorplan.js?v=${this.version}`, true));
-    promises.push(this.loadScript('/local/floorplan/lib/yaml.min.js', true));
-    promises.push(this.loadScript('/local/floorplan/lib/jquery-3.4.1.min.js', true));
+    promises.push(this.loadScript(`/local/lovelace-floorplan/lib/floorplan.js?v=${this.version}`, true));
+    promises.push(this.loadScript('/local/lovelace-floorplan/lib/yaml.min.js', true));
+    promises.push(this.loadScript('/local/lovelace-floorplan//lib/jquery-3.4.1.min.js', true));
 
     return Promise.all(promises)
       .then(() => {
