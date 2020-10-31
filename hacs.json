@@ -1,5 +1,4 @@
 {
     "name": "Lovelace Floorplan",
-    "render_readme": true,
-    "filename": "floorplan-card.js"
+    "render_readme": true
 }
