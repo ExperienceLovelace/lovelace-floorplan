@@ -7,6 +7,8 @@ Floorplan for Lovelace is here!
 ### HACS
 Just add the URI to HACS's as custom repository.
 
+In the procress, kindly note down the location of the files. Normally you'll find them in the community/lovelace-floorplan-directory.
+
 ### Manual
 
 #### 1) Download files from repo
