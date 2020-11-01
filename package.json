@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/exetico/lovelace-floorplan.git"
+    "url": "git+https://github.com/pkozul/lovelace-floorplan.git"
   },
   "keywords": [
     "floorplan",
@@ -27,9 +27,9 @@
   "author": "pkozul, exetico",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/exetico/lovelace-floorplan/issues"
+    "url": "https://github.com/pkozul/lovelace-floorplan/issues"
   },
-  "homepage": "https://github.com/exetico/lovelace-floorplan#readme",
+  "homepage": "https://github.com/pkozul/lovelace-floorplan#readme",
   "dependencies": {
     "jquery": "^3.5.1",
     "yamljs": "^0.3.0"
