@@ -1,3 +1,8 @@
+global.$ = require( "jquery" );
+var YAML = require( "yamljs" );
+
+require('../src/lib/floorplan');
+
 class FloorplanCard extends HTMLElement {
   constructor() {
     super();
@@ -7,7 +12,6 @@ class FloorplanCard extends HTMLElement {
     this.isScriptsLoading = false;
     this.isFloorplanLoading = false;
 
-    this.isScriptsLoaded = false;
     this.isFloorplanLoaded = false;
 
     this.attachShadow({ mode: 'open' });
@@ -23,29 +27,12 @@ class FloorplanCard extends HTMLElement {
   set hass(hass) {
     if (!this.config || this.isScriptsLoading || this.isFloorplanLoading) return;
 
-    (this.isScriptsLoaded ? Promise.resolve() : this.loadScripts())
-      .then(() => {
+
         (this.isFloorplanLoaded ? Promise.resolve() : this.loadFloorplan(hass, this.config))
           .then(() => {
             this.floorplan.hassChanged(hass);
           });
-      });
-  }
 
-  loadScripts() {
-    this.isScriptsLoading = true;
-
-    const promises = [];
-
-    promises.push(this.loadScript(`/local/lovelace-floorplan/lib/floorplan.js?v=${this.version}`, true));
-    promises.push(this.loadScript('/local/lovelace-floorplan/lib/yaml.min.js', true));
-    promises.push(this.loadScript('/local/lovelace-floorplan//lib/jquery-3.4.1.min.js', true));
-
-    return Promise.all(promises)
-      .then(() => {
-        this.isScriptsLoading = false;
-        this.isScriptsLoaded = true;
-      });
   }
 
   loadFloorplan(hass, config) {
@@ -192,7 +179,7 @@ class FloorplanCard extends HTMLElement {
 
   loadScript(scriptUrl, useCache) {
     return new Promise((resolve, reject) => {
-      let script = document.createElement('script');
+      const script = document.createElement('script');
       script.async = true;
       script.src = useCache ? scriptUrl : this.cacheBuster(scriptUrl);
       script.onload = () => resolve();

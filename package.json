@@ -1,0 +1,49 @@
+{
+  "name": "lovelace-floorplan",
+  "version": "1.0.0",
+  "description": "Floorplan for Lovelace-cards (Home Assistant)",
+  "main": "floorplan-card.js",
+  "directories": {
+    "example": "examples",
+    "lib": "lib"
+  },
+  "scripts": {
+    "start": "rollup -c --watch",
+    "build": "npm run lint && npm run rollup && npm run browserify",
+    "browserify": "browserify dist/floorplan-card.js -o dist/floorplan-card.js",
+    "lint": "eslint src/*.js --fix",
+    "rollup": "rollup -c -m"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/exetico/lovelace-floorplan.git"
+  },
+  "keywords": [
+    "floorplan",
+    "lovelace",
+    "homeassistant",
+    "hacs"
+  ],
+  "author": "pkozul, exetico",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/exetico/lovelace-floorplan/issues"
+  },
+  "homepage": "https://github.com/exetico/lovelace-floorplan#readme",
+  "dependencies": {
+    "jquery": "^3.5.1",
+    "yaml": "^1.10.0",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.6.0",
+    "@typescript-eslint/parser": "^4.6.0",
+    "brfs": "^2.0.2",
+    "browserify": "^17.0.0",
+    "eslint": "^7.12.1",
+    "js": "^0.1.0",
+    "prettier": "^2.1.2",
+    "rollup-plugin-browserify-transform": "^1.0.1",
+    "typescript": "^4.0.5"
+  }
+}
