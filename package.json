@@ -32,18 +32,14 @@
   "homepage": "https://github.com/exetico/lovelace-floorplan#readme",
   "dependencies": {
     "jquery": "^3.5.1",
-    "yaml": "^1.10.0",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.6.0",
-    "brfs": "^2.0.2",
     "browserify": "^17.0.0",
     "eslint": "^7.12.1",
     "js": "^0.1.0",
     "prettier": "^2.1.2",
-    "rollup-plugin-browserify-transform": "^1.0.1",
     "typescript": "^4.0.5"
   }
 }

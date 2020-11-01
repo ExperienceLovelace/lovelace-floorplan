@@ -5,7 +5,7 @@ Floorplan for Lovelace is here!
 ## Installation
 
 ### HACS
-Just add the URI to HACS's as custom repository.
+**Just add the URI to [HACS](https://hacs.xyz/)'s as custom repository.**
 
 In the procress, kindly note down the location of the files. Normally you'll find them in the community/lovelace-floorplan-directory.
 
@@ -13,17 +13,11 @@ In the procress, kindly note down the location of the files. Normally you'll fin
 
 #### 1) Download files from repo
 
-To get started, copy the following files to the `www/floorplan` folder of your Home Assistant installation (right-click on each file to save directly to disk):
-
-- [floorplan-card.js](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/floorplan-card.js)
-- [lib/floorplan.js](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/lib/floorplan.js)
-- [lib/yaml.min.js](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/lib/yaml.min.js)
-- [lib/jquery-3.4.1.min.js](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/lib/jquery-3.4.1.min.js)
-
+To get started, copy the [dist/floorplan-card.js](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/floorplan-card.js) to `www/lovelace-floorplan` folder of your Home Assistant installation (You can right-click the file, to save it to your disk):
 
 #### 2) Floorplan image
 
-You'll then need an SVG file of your floorplan, and a CSS file for styling. You can use the samples provided to get started. Copy them to the `www/floorplan/examples/simple` folder of your Home Assistant installation:
+You'll then need an SVG file of your floorplan, and a CSS file for styling. You can use the samples provided to get started. Copy them to the `www/lovelace-floorplan/examples/simple` folder of your Home Assistant installation:
 
 - [examples/simple/simple.svg](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/examples/simple/simple.svg)
 - [examples/simple/simple.css](https://raw.githubusercontent.com/pkozul/lovelace-floorplan/master/www/floorplan/examples/simple/simple.css)
@@ -76,3 +70,10 @@ To get started with some fully working examples, try some of the floorplans belo
 ## Inspiration and Support
 Check the [Floorplan-section](https://community.home-assistant.io/c/third-party/floorplan/28) on the Home Assistant Community.
 
+
+## Bulding floorplan-card.js
+The script is bundled with browserify. 
+
+To build floorplan-card.js, just run:
+ 1. `npm install`
+ 2. `npm run build`
