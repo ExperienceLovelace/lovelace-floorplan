@@ -67,6 +67,39 @@ To get started with some fully working examples, try some of the floorplans belo
 - [Simple Floorplan](https://github.com/pkozul/lovelace-floorplan/tree/master/www/floorplan/examples/simple)
 - [Ring doorbell](https://github.com/pkozul/lovelace-floorplan/tree/master/www/floorplan/examples/ring)
 
+### Long Click-example
+
+You'll find the primary functions of Floorplan, by looking into the Floorplan examples.
+
+However, Floorplan supports Long Press, too. Here's one example on how to use the function:
+```
+   - config:
+          image: /local/floorplan/examples/simple/429.svg?v=5
+          image_mobile: /local/floorplan/examples/simple/429_transformed.svg?v=5
+          preload_cards:
+            - map
+            - gauge
+          preload_rows:
+            - lock-entity-row
+          rules:
+            - action: null
+              entities:
+                - vacuum.chop_chop
+              long_click:
+                data:
+                  card:
+                    entities:
+                      - entity: device_tracker.automower_h_182302002_182040696
+                    hours_to_show: 12
+                    type: map
+                  deviceID: this
+                  style:
+                    '--more-info-header-background': 'rgba(255, 159, 9, 1)'
+                  title: Chop chop
+                service: browser_mod.popup
+```
+_More examples will come, in the future._
+
 ## Inspiration and Support
 Check the [Floorplan-section](https://community.home-assistant.io/c/third-party/floorplan/28) on the Home Assistant Community.
 
