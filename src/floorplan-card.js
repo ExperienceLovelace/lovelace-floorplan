@@ -1,12 +1,11 @@
 global.$ = require( "jquery" );
 var YAML = require( "yamljs" );
 
+// jQuery LongPress Plugin
+require('jquery.longpress');
 
 // Main Floorplan lib
 require('floorplan');
-
-// jQuery LongPress Plugin
-require('jquery.longpress');
 
 class FloorplanCard extends HTMLElement {
   constructor() {
