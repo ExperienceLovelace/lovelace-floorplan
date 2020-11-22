@@ -104,7 +104,7 @@ _More examples will come, in the future._
 Check the [Floorplan-section](https://community.home-assistant.io/c/third-party/floorplan/28) on the Home Assistant Community.
 
 
-## Bulding floorplan-card.js
+## Building floorplan-card.js
 The script is bundled with browserify. 
 
 To build floorplan-card.js, just run:
