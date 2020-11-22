@@ -67,38 +67,87 @@ To get started with some fully working examples, try some of the floorplans belo
 - [Simple Floorplan](https://github.com/pkozul/lovelace-floorplan/tree/master/www/floorplan/examples/simple)
 - [Ring doorbell](https://github.com/pkozul/lovelace-floorplan/tree/master/www/floorplan/examples/ring)
 
-### Long Click-example
+
+### Option: `long_click`
 
 You'll find the primary functions of Floorplan, by looking into the Floorplan examples.
 
 However, Floorplan supports Long Press, too. Here's one example on how to use the function:
+```yaml
+   - config:
+          image: /local/floorplan/examples/simple/429.svg?v=5
+          rules:
+            - action:
+                service: light.toggle
+                data:
+                  entity_id: light.triplespot_office
+              element: area.office
+              entities:
+                - light.triplespot_office
+              long_click:
+                  data:
+                    card:
+                      type: entities
+                      entities:
+                        - light.triplespot_office
+                        - media_player.sonos_office
+                    title: Custom Entity card
+                  service: browser_mod.popup
 ```
+
+For the best results, use [HASS Browser Mod](https://github.com/thomasloven/hass-browser_mod).
+
+Here's a sample snippet, only containing the `long_click` option:
+```yaml
+long_click:
+    data:
+      card:
+        type: entities
+        entities:
+          - light.triplespot_office
+          - media_player.sonos_office
+      title: Custom Entity card
+    service: browser_mod.popup
+```
+
+Credit(s): [Alfiegerner](https://github.com/Alfiegerner)
+
+### Option: `image_mobile`
+
+You're able to define a seperate SVG-file for mobile-devices. If `image_mobile` are defined, Floorplan will use that for all known mobile devices.
+```yaml
    - config:
           image: /local/floorplan/examples/simple/429.svg?v=5
           image_mobile: /local/floorplan/examples/simple/429_transformed.svg?v=5
+          rules:
+            - action:
+                service: light.toggle
+                data:
+                  entity_id: light.triplespot_office
+              element: area.office
+              entities:
+                - light.triplespot_office
+              ...
+```
+
+Credit(s): [Alfiegerner](https://github.com/Alfiegerner) - _[exetico](https://github.com/exetico) has provided a hot-fix for the logic(s). `image` will be used, if `image_mobile` are not defined._
+
+### Option: `pre_load`
+The `pre_load_ option are implemented to prevent "not found errors" for cards like hui-gauge. It's onclear if it's still required for things to work as expected. I'm currently [waiting for more details](https://github.com/pkozul/lovelace-floorplan/pull/29#issuecomment-731731289).
+
+```yaml
+   - config:
+          image: /local/floorplan/examples/simple/429.svg?v=5
           preload_cards:
             - map
             - gauge
           preload_rows:
             - lock-entity-row
           rules:
-            - action: null
-              entities:
-                - vacuum.chop_chop
-              long_click:
-                data:
-                  card:
-                    entities:
-                      - entity: device_tracker.automower_h_182302002_182040696
-                    hours_to_show: 12
-                    type: map
-                  deviceID: this
-                  style:
-                    '--more-info-header-background': 'rgba(255, 159, 9, 1)'
-                  title: Chop chop
-                service: browser_mod.popup
+            ...
 ```
-_More examples will come, in the future._
+
+Credit(s): [Alfiegerner](https://github.com/Alfiegerner)
 
 ## Inspiration and Support
 Check the [Floorplan-section](https://community.home-assistant.io/c/third-party/floorplan/28) on the Home Assistant Community.
