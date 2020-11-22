@@ -14501,7 +14501,6 @@ module.exports = Yaml;
       var modifiedRule = null;
       if (this.rule.long_click && this.rule.long_click.service) {
         modifiedRule = JSON.parse(JSON.stringify(this.rule));
-        console.log("Debug",modifiedRule);
         modifiedRule.action.service = modifiedRule.long_click.service;
         if (this.rule.long_click.data) { 
          modifiedRule.action.data = modifiedRule.long_click.data; 
