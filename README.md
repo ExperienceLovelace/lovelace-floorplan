@@ -133,14 +133,16 @@ You're able to define a seperate SVG-file for mobile-devices. If `image_mobile` 
 Credit(s): [Alfiegerner](https://github.com/Alfiegerner) - _[exetico](https://github.com/exetico) has provided a hot-fix for the logic(s). `image` will be used, if `image_mobile` are not defined._
 
 ### Option: `pre_load`
-The `pre_load_ option are implemented to prevent "not found errors" for cards like hui-gauge. It's onclear if it's still required for things to work as expected. I'm currently [waiting for more details](https://github.com/pkozul/lovelace-floorplan/pull/29#issuecomment-731731289).
+The `pre_load_ option are implemented to prevent "not found errors" for cards like hui-gauge. It is still unclear if it is still required.
+
+_I'll update details related to this, in near future._
 
 ```yaml
    - config:
           image: /local/floorplan/examples/simple/429.svg?v=5
           preload_cards:
             - map
-            - gauge
+            - gui-gauge
           preload_rows:
             - lock-entity-row
           rules:
