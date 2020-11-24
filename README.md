@@ -68,7 +68,9 @@ To get started with some fully working examples, try some of the floorplans belo
 - [Ring doorbell](https://github.com/pkozul/lovelace-floorplan/tree/master/www/floorplan/examples/ring)
 
 
-### Option: `long_click`
+### Options
+
+#### Option: `long_click`
 
 You'll find the primary functions of Floorplan, by looking into the Floorplan examples.
 
@@ -112,7 +114,7 @@ long_click:
 
 Credit(s): [Alfiegerner](https://github.com/Alfiegerner)
 
-### Option: `image_mobile`
+#### Option: `image_mobile`
 
 You're able to define a seperate SVG-file for mobile-devices. If `image_mobile` are defined, Floorplan will use that for all known mobile devices.
 ```yaml
@@ -132,7 +134,7 @@ You're able to define a seperate SVG-file for mobile-devices. If `image_mobile` 
 
 Credit(s): [Alfiegerner](https://github.com/Alfiegerner) - _[exetico](https://github.com/exetico) has provided a hot-fix for the logic(s). `image` will be used, if `image_mobile` are not defined._
 
-### Option: `pre_load`
+#### Option: `pre_load`
 The `pre_load_ option are implemented to prevent "not found errors" for cards like hui-gauge. It is still unclear if it is still required.
 
 _I'll update details related to this, in near future._
@@ -151,7 +153,7 @@ _I'll update details related to this, in near future._
 
 Credit(s): [Alfiegerner](https://github.com/Alfiegerner)
 
-### Option: `no_entity_id`
+#### Option: `no_entity_id`
 If you want so use a service like `hue.hue_activate_scene`, which doesn't accept an entitiy_id, use `no_entity_id` instead.
 
 ```yaml

@@ -92,7 +92,14 @@ automation:
 
 ## 3) Add to Lovelace
 
-Then add the following to your Lovelace configuration:
+If you're configuring the Lovelace interface with `ui-lovelace.yaml`, you know what to do.
+
+If you're **not** configuring the Lovelace interface with the `ui-lovelace.yaml` file, you'll just need to do the following steps:
+- Click the top right hamburger menu
+- Select 'Configure UI'
+- Sleect the bottom right orange '+' circle
+- Click 'Manual'
+- Paste in YAML
 
 ```
   - cards:
