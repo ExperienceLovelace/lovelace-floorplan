@@ -1701,7 +1701,7 @@
       const actionService = this.getActionService(action, entityId, svgElement);
       const actionData = this.getActionData(action, entityId, svgElement);
 
-      if (!actionData.entity_id && entityId) {
+      if (!actionData.entity_id && entityId && !action.no_entity_id) {
         actionData.entity_id = entityId;
       }
 
