@@ -74,25 +74,25 @@ You'll find the primary functions of Floorplan, by looking into the Floorplan ex
 
 However, Floorplan supports Long Press, too. Here's one example on how to use the function:
 ```yaml
-   - config:
-          image: /local/floorplan/examples/simple/429.svg?v=5
-          rules:
-            - action:
-                service: light.toggle
-                data:
-                  entity_id: light.triplespot_office
-              element: area.office
-              entities:
-                - light.triplespot_office
-              long_click:
-                  data:
-                    card:
-                      type: entities
-                      entities:
-                        - light.triplespot_office
-                        - media_player.sonos_office
-                    title: Custom Entity card
-                  service: browser_mod.popup
+- config:
+      image: /local/floorplan/examples/simple/429.svg?v=5
+      rules:
+        - action:
+            service: light.toggle
+            data:
+              entity_id: light.triplespot_office
+          element: area.office
+          entities:
+            - light.triplespot_office
+          long_click:
+              data:
+                card:
+                  type: entities
+                  entities:
+                    - light.triplespot_office
+                    - media_player.sonos_office
+                title: Custom Entity card
+              service: browser_mod.popup
 ```
 
 For the best results, use [HASS Browser Mod](https://github.com/thomasloven/hass-browser_mod).
@@ -116,18 +116,18 @@ Credit(s): [Alfiegerner](https://github.com/Alfiegerner)
 
 You're able to define a seperate SVG-file for mobile-devices. If `image_mobile` are defined, Floorplan will use that for all known mobile devices.
 ```yaml
-   - config:
-          image: /local/floorplan/examples/simple/429.svg?v=5
-          image_mobile: /local/floorplan/examples/simple/429_transformed.svg?v=5
-          rules:
-            - action:
-                service: light.toggle
-                data:
-                  entity_id: light.triplespot_office
-              element: area.office
-              entities:
-                - light.triplespot_office
-              ...
+- config:
+      image: /local/floorplan/examples/simple/429.svg?v=5
+      image_mobile: /local/floorplan/examples/simple/429_transformed.svg?v=5
+      rules:
+        - action:
+            service: light.toggle
+            data:
+              entity_id: light.triplespot_office
+          element: area.office
+          entities:
+            - light.triplespot_office
+          ...
 ```
 
 Credit(s): [Alfiegerner](https://github.com/Alfiegerner) - _[exetico](https://github.com/exetico) has provided a hot-fix for the logic(s). `image` will be used, if `image_mobile` are not defined._
@@ -138,18 +138,35 @@ The `pre_load_ option are implemented to prevent "not found errors" for cards li
 _I'll update details related to this, in near future._
 
 ```yaml
-   - config:
-          image: /local/floorplan/examples/simple/429.svg?v=5
-          preload_cards:
-            - map
-            - gui-gauge
-          preload_rows:
-            - lock-entity-row
-          rules:
-            ...
+- config:
+      image: /local/floorplan/examples/simple/429.svg?v=5
+      preload_cards:
+        - map
+        - gui-gauge
+      preload_rows:
+        - lock-entity-row
+      rules:
+        ...
 ```
 
 Credit(s): [Alfiegerner](https://github.com/Alfiegerner)
+
+### Option: `no_entity_id`
+If you want so use a service like `hue.hue_activate_scene`, which doesn't accept an entitiy_id, use `no_entity_id` instead.
+
+```yaml
+- config:
+      rules:
+        - action:
+            no_entity_id: true
+            service: hue.hue_activate_scene
+            data:
+                scene_name: 'sleep-time'
+                group_name: 'bedroom'
+          element: button-heating
+          more_info: false
+```
+
 
 ## Inspiration and Support
 Check the [Floorplan-section](https://community.home-assistant.io/c/third-party/floorplan/28) on the Home Assistant Community.
