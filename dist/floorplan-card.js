@@ -1,13 +1,13 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 (function (global){(function (){
-global.$ = require( "jquery" );
-var YAML = require( "yamljs" );
+global.$ = require("jquery");
+var YAML = require("yamljs");
 
 // jQuery LongPress Plugin
-require('jquery.longpress');
+require("jquery.longpress");
 
 // Main Floorplan lib
-require('floorplan');
+require("floorplan");
 
 class FloorplanCard extends HTMLElement {
   constructor() {
@@ -20,7 +20,7 @@ class FloorplanCard extends HTMLElement {
 
     this.isFloorplanLoaded = false;
 
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: "open" });
   }
 
   setConfig(config) {
@@ -31,14 +31,15 @@ class FloorplanCard extends HTMLElement {
   }
 
   set hass(hass) {
-    if (!this.config || this.isScriptsLoading || this.isFloorplanLoading) return;
+    if (!this.config || this.isScriptsLoading || this.isFloorplanLoading)
+      return;
 
-
-        (this.isFloorplanLoaded ? Promise.resolve() : this.loadFloorplan(hass, this.config))
-          .then(() => {
-            this.floorplan.hassChanged(hass);
-          });
-
+    (this.isFloorplanLoaded
+      ? Promise.resolve()
+      : this.loadFloorplan(hass, this.config)
+    ).then(() => {
+      this.floorplan.hassChanged(hass);
+    });
   }
 
   loadFloorplan(hass, config) {
@@ -54,49 +55,50 @@ class FloorplanCard extends HTMLElement {
       config: (config && config.config) || config,
     };
 
-    return floorplan.init(options)
-      .then(() => {
-        this.setIsLoading(false);
-        this.floorplan = floorplan;
-        this.isFloorplanLoading = false;
-        this.isFloorplanLoaded = true;
-      });
+    return floorplan.init(options).then(() => {
+      this.setIsLoading(false);
+      this.floorplan = floorplan;
+      this.isFloorplanLoading = false;
+      this.isFloorplanLoaded = true;
+    });
   }
 
   initCard(config) {
     const root = this.shadowRoot;
     if (root.lastChild) root.removeChild(root.lastChild);
 
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.textContent = this.getStyle();
     root.appendChild(style);
 
-    const card = document.createElement('ha-card');
+    const card = document.createElement("ha-card");
     card.header = config.title;
     root.appendChild(card);
 
-    const container = document.createElement('div');
-    container.id = 'container';
+    const container = document.createElement("div");
+    container.id = "container";
     card.appendChild(container);
 
-    const spinner = document.createElement('paper-spinner-lite');
+    const spinner = document.createElement("paper-spinner-lite");
     container.appendChild(spinner);
 
-    const floorplan = document.createElement('div');
-    floorplan.id = 'floorplan';
+    const floorplan = document.createElement("div");
+    floorplan.id = "floorplan";
     container.appendChild(floorplan);
 
-    const log = document.createElement('div');
-    log.id = 'log';
+    const log = document.createElement("div");
+    log.id = "log";
     container.appendChild(log);
 
-    const link = document.createElement('a');
-    link.setAttribute('href', '#');
-    link.text = 'Clear log';
+    const link = document.createElement("a");
+    link.setAttribute("href", "#");
+    link.text = "Clear log";
     log.appendChild(link);
-    link.onclick = function () { $(this).siblings('ul').html('').parent().css('display', 'none'); };
+    link.onclick = function () {
+      $(this).siblings("ul").html("").parent().css("display", "none");
+    };
 
-    const list = document.createElement('ul');
+    const list = document.createElement("ul");
     log.appendChild(list);
 
     this.log = log;
@@ -146,36 +148,35 @@ class FloorplanCard extends HTMLElement {
   }
 
   openMoreInfo(entityId) {
-    this.fire('hass-more-info', { entityId: entityId });
+    this.fire("hass-more-info", { entityId: entityId });
   }
 
   setIsLoading(isLoading) {
     this.isLoading = isLoading;
 
     if (this.isLoading) {
-      this.spinner.setAttribute('active', '');
-      this.spinner.style.display = 'inline-block';
-    }
-    else {
-      this.spinner.removeAttribute('active');
-      this.spinner.style.display = 'none';
+      this.spinner.setAttribute("active", "");
+      this.spinner.style.display = "inline-block";
+    } else {
+      this.spinner.removeAttribute("active");
+      this.spinner.style.display = "none";
     }
   }
 
   logError(message) {
     console.error(message);
 
-    $(this.log).find('ul').prepend(`<li class="error">${message}</li>`);
-    $(this.log).css('display', 'block');
+    $(this.log).find("ul").prepend(`<li class="error">${message}</li>`);
+    $(this.log).css("display", "block");
   }
 
   fire(type, detail, options) {
     options = options || {};
-    detail = (detail === null || detail === undefined) ? {} : detail;
+    detail = detail === null || detail === undefined ? {} : detail;
     const event = new Event(type, {
       bubbles: options.bubbles === undefined ? true : options.bubbles,
       cancelable: Boolean(options.cancelable),
-      composed: options.composed === undefined ? true : options.composed
+      composed: options.composed === undefined ? true : options.composed,
     });
     event.detail = detail;
     const node = options.node || this;
@@ -185,7 +186,7 @@ class FloorplanCard extends HTMLElement {
 
   loadScript(scriptUrl, useCache) {
     return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
+      const script = document.createElement("script");
       script.async = true;
       script.src = useCache ? scriptUrl : this.cacheBuster(scriptUrl);
       script.onload = () => resolve();
@@ -195,11 +196,13 @@ class FloorplanCard extends HTMLElement {
   }
 
   cacheBuster(url) {
-    return `${url}${(url.indexOf('?') >= 0) ? '&' : '?'}_=${new Date().getTime()}`;
+    return `${url}${
+      url.indexOf("?") >= 0 ? "&" : "?"
+    }_=${new Date().getTime()}`;
   }
 }
 
-customElements.define('floorplan-card', FloorplanCard);
+customElements.define("floorplan-card", FloorplanCard);
 
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
@@ -12971,15 +12974,15 @@ module.exports = Yaml;
 
 },{"./Dumper":3,"./Parser":9,"./Utils":12}],14:[function(require,module,exports){
 (function () {
-  if (typeof window.Floorplan === 'function') return;
+  if (typeof window.Floorplan === "function") return;
 
   class Floorplan {
     constructor() {
-      this.version = '1.1.14';
+      this.version = "1.1.14";
       this.root = {};
       this.hass = {};
-      this.openMoreInfo = () => { };
-      this.setIsLoading = () => { };
+      this.openMoreInfo = () => {};
+      this.setIsLoading = () => {};
       this.config = undefined;
       this.timeDifferenceMs = 0; // assume client and server perfectly in sync
       this.pageInfos = [];
@@ -13021,9 +13024,9 @@ module.exports = Yaml;
       this.initTimeDifference();
 
       return this.loadConfig(options.config)
-        .then(config => {
+        .then((config) => {
           this.getLogLevels(config);
-          this.logInfo('VERSION', `Floorplan v${this.version}`);
+          this.logInfo("VERSION", `Floorplan v${this.version}`);
 
           if (!this.validateConfig(config)) {
             this.setIsLoading(false);
@@ -13032,56 +13035,53 @@ module.exports = Yaml;
 
           this.config = Object.assign({}, config);
 
-          return this.loadLibraries()
-            .then(() => {
-              this.initFullyKiosk();
-              return this.config.pages ? this.initMultiPage() : this.initSinglePage();
-            });
+          return this.loadLibraries().then(() => {
+            this.initFullyKiosk();
+            return this.config.pages
+              ? this.initMultiPage()
+              : this.initSinglePage();
+          });
         })
-        .catch(error => {
+        .catch((error) => {
           this.setIsLoading(false);
           this.handleError(error);
         });
     }
 
     initMultiPage() {
-      return this.loadPages()
-        .then(() => {
-          this.setIsLoading(false);
-          this.initPageDisplay();
-          this.initVariables();
-          this.initStartupActions();
-          return this.handleEntities(true);
-        });
+      return this.loadPages().then(() => {
+        this.setIsLoading(false);
+        this.initPageDisplay();
+        this.initVariables();
+        this.initStartupActions();
+        return this.handleEntities(true);
+      });
     }
 
     initSinglePage() {
       const imageUrl = this.getBestImage(this.config);
-      return this.loadFloorplanSvg(imageUrl)
-        .then((svg) => {
-          this.config.svg = svg;
-          return this.loadStyleSheet(this.config.stylesheet)
-            .then(() => {
-              return this.initFloorplan(svg, this.config)
-                .then(() => {
-                  this.setIsLoading(false);
-                  this.initPageDisplay();
-                  this.initVariables();
-                  this.initStartupActions();
-                  return this.handleEntities(true);
-                })
-            });
+      return this.loadFloorplanSvg(imageUrl).then((svg) => {
+        this.config.svg = svg;
+        return this.loadStyleSheet(this.config.stylesheet).then(() => {
+          return this.initFloorplan(svg, this.config).then(() => {
+            this.setIsLoading(false);
+            this.initPageDisplay();
+            this.initVariables();
+            this.initStartupActions();
+            return this.handleEntities(true);
+          });
         });
+      });
     }
 
     getLogLevels(config) {
       if (!config.log_level) return;
 
       const allLogLevels = {
-        error: ['error'],
-        warning: ['error', 'warning'],
-        info: ['error', 'warning', 'info'],
-        debug: ['error', 'warning', 'info', 'debug'],
+        error: ["error"],
+        warning: ["error", "warning"],
+        info: ["error", "warning", "info"],
+        debug: ["error", "warning", "info", "debug"],
       };
 
       const logLevels = allLogLevels[config.log_level.toLowerCase()];
@@ -13094,13 +13094,11 @@ module.exports = Yaml;
     /***************************************************************************************************************************/
 
     loadConfig(config) {
-      if (typeof config === 'string') {
-        return this.fetchTextResource(config, false)
-          .then(config => {
-            return Promise.resolve(YAML.parse(config));
-          });
-      }
-      else {
+      if (typeof config === "string") {
+        return this.fetchTextResource(config, false).then((config) => {
+          return Promise.resolve(YAML.parse(config));
+        });
+      } else {
         return Promise.resolve(config);
       }
     }
@@ -13109,11 +13107,13 @@ module.exports = Yaml;
       const promises = [];
 
       if (this.isOptionEnabled(this.config.pan_zoom)) {
-        promises.push(this.loadScript('/local/floorplan/lib/svg-pan-zoom.min.js'));
+        promises.push(
+          this.loadScript("/local/floorplan/lib/svg-pan-zoom.min.js")
+        );
       }
 
       if (this.isOptionEnabled(this.config.fully_kiosk)) {
-        promises.push(this.loadScript('/local/floorplan/lib/fully-kiosk.js'));
+        promises.push(this.loadScript("/local/floorplan/lib/fully-kiosk.js"));
       }
 
       return promises.length ? Promise.all(promises) : Promise.resolve();
@@ -13121,7 +13121,7 @@ module.exports = Yaml;
 
     loadScript(scriptUrl) {
       return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
+        const script = document.createElement("script");
         script.src = this.cacheBuster(scriptUrl);
         script.onload = () => {
           return resolve();
@@ -13135,75 +13135,92 @@ module.exports = Yaml;
     }
 
     loadPages() {
-      const configPromises = [Promise.resolve()]
-        .concat(this.config.pages.map(pageConfigUrl => {
-          return this.loadPageConfig(pageConfigUrl, this.config.pages.indexOf(pageConfigUrl));
-        }));
+      const configPromises = [Promise.resolve()].concat(
+        this.config.pages.map((pageConfigUrl) => {
+          return this.loadPageConfig(
+            pageConfigUrl,
+            this.config.pages.indexOf(pageConfigUrl)
+          );
+        })
+      );
 
-      return Promise.all(configPromises)
-        .then(() => {
-          const pageInfos = Object.keys(this.pageInfos).map(key => this.pageInfos[key]);
-          pageInfos.sort((a, b) => a.index - b.index); // sort ascending
+      return Promise.all(configPromises).then(() => {
+        const pageInfos = Object.keys(this.pageInfos).map(
+          (key) => this.pageInfos[key]
+        );
+        pageInfos.sort((a, b) => a.index - b.index); // sort ascending
 
-          const masterPageInfo = pageInfos.find(pageInfo => pageInfo.config.master_page);
-          if (masterPageInfo) {
-            masterPageInfo.isMaster = true;
-          }
+        const masterPageInfo = pageInfos.find(
+          (pageInfo) => pageInfo.config.master_page
+        );
+        if (masterPageInfo) {
+          masterPageInfo.isMaster = true;
+        }
 
-          const defaultPageInfo = pageInfos.find(pageInfo => !pageInfo.config.master_page);
-          if (defaultPageInfo) {
-            defaultPageInfo.isDefault = true;
-          }
+        const defaultPageInfo = pageInfos.find(
+          (pageInfo) => !pageInfo.config.master_page
+        );
+        if (defaultPageInfo) {
+          defaultPageInfo.isDefault = true;
+        }
 
-          return this.loadPageFloorplanSvg(masterPageInfo, masterPageInfo) // load master page first
-            .then(() => {
-              const nonMasterPages = pageInfos.filter(pageInfo => pageInfo !== masterPageInfo);
+        return this.loadPageFloorplanSvg(masterPageInfo, masterPageInfo) // load master page first
+          .then(() => {
+            const nonMasterPages = pageInfos.filter(
+              (pageInfo) => pageInfo !== masterPageInfo
+            );
 
-              const svgPromises = [Promise.resolve()]
-                .concat(nonMasterPages.map(pageInfo => this.loadPageFloorplanSvg(pageInfo, masterPageInfo)));
+            const svgPromises = [Promise.resolve()].concat(
+              nonMasterPages.map((pageInfo) =>
+                this.loadPageFloorplanSvg(pageInfo, masterPageInfo)
+              )
+            );
 
-              return Promise.all(svgPromises);
-            });
-        });
+            return Promise.all(svgPromises);
+          });
+      });
     }
 
     loadPageConfig(pageConfigUrl, index) {
-      return this.loadConfig(pageConfigUrl)
-        .then((pageConfig) => {
-          const pageInfo = this.createPageInfo(pageConfig);
-          pageInfo.index = index;
-          return Promise.resolve(pageInfo);
-        });
+      return this.loadConfig(pageConfigUrl).then((pageConfig) => {
+        const pageInfo = this.createPageInfo(pageConfig);
+        pageInfo.index = index;
+        return Promise.resolve(pageInfo);
+      });
     }
 
     loadPageFloorplanSvg(pageInfo, masterPageInfo) {
       const imageUrl = this.getBestImage(pageInfo.config);
-      return this.loadFloorplanSvg(imageUrl, pageInfo, masterPageInfo)
-        .then((svg) => {
+      return this.loadFloorplanSvg(imageUrl, pageInfo, masterPageInfo).then(
+        (svg) => {
           svg.id = pageInfo.config.page_id; // give the SVG an ID so it can be styled (i.e. background color)
           pageInfo.svg = svg;
-          return this.loadStyleSheet(pageInfo.config.stylesheet)
-            .then(() => {
-              return this.initFloorplan(pageInfo.svg, pageInfo.config);
-            });
-        });
+          return this.loadStyleSheet(pageInfo.config.stylesheet).then(() => {
+            return this.initFloorplan(pageInfo.svg, pageInfo.config);
+          });
+        }
+      );
     }
 
     getBestImage(config) {
-      let imageUrl = '';
+      let imageUrl = "";
 
-      let isMobile = (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent) 
-      || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(navigator.userAgent.substr(0,4)));
+      let isMobile =
+        /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(
+          navigator.userAgent
+        ) ||
+        /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(
+          navigator.userAgent.substr(0, 4)
+        );
 
-      if (typeof config.image === 'string') {
+      if (typeof config.image === "string") {
         // Device detection
-        if(isMobile && typeof config.image_mobile === 'string') {
-           imageUrl = config.image_mobile;
+        if (isMobile && typeof config.image_mobile === "string") {
+          imageUrl = config.image_mobile;
         } else {
           imageUrl = config.image;
         }
-      }
-      else {
+      } else {
         if (config.image.sizes) {
           config.image.sizes.sort((a, b) => b.min_width - a.min_width); // sort descending
           for (let pageSize of config.image.sizes) {
@@ -13236,168 +13253,223 @@ module.exports = Yaml;
         return Promise.resolve();
       }
 
-      return this.fetchTextResource(stylesheetUrl, false)
-        .then(stylesheet => {
-          const link = document.createElement('style');
-          link.type = 'text/css';
-          link.innerHTML = stylesheet;
-          this.root.appendChild(link);
+      return this.fetchTextResource(stylesheetUrl, false).then((stylesheet) => {
+        const link = document.createElement("style");
+        link.type = "text/css";
+        link.innerHTML = stylesheet;
+        this.root.appendChild(link);
 
-          const cssRules = this.getArray(link.sheet.cssRules);
-          this.cssRules = this.cssRules.concat(cssRules);
+        const cssRules = this.getArray(link.sheet.cssRules);
+        this.cssRules = this.cssRules.concat(cssRules);
 
-          return Promise.resolve();
-        });
+        return Promise.resolve();
+      });
     }
 
     loadFloorplanSvg(imageUrl, pageInfo, masterPageInfo) {
-      return this.fetchTextResource(imageUrl, true)
-        .then(result => {
-          let svg = $(result).siblings('svg')[0];
-          svg = svg ? svg : $(result);
+      return this.fetchTextResource(imageUrl, true).then((result) => {
+        let svg = $(result).siblings("svg")[0];
+        svg = svg ? svg : $(result);
 
-          if (pageInfo) {
-            $(svg).attr('id', pageInfo.config.page_id);
-          }
+        if (pageInfo) {
+          $(svg).attr("id", pageInfo.config.page_id);
+        }
 
-          $(svg).height('100%');
-          $(svg).width('100%');
-          $(svg).css('position', this.isPanel ? 'absolute' : 'relative');
-          $(svg).css('cursor', 'default');
-          $(svg).css('opacity', 0);
-          $(svg).attr('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+        $(svg).height("100%");
+        $(svg).width("100%");
+        $(svg).css("position", this.isPanel ? "absolute" : "relative");
+        $(svg).css("cursor", "default");
+        $(svg).css("opacity", 0);
+        $(svg).attr("xmlns:xlink", "http://www.w3.org/1999/xlink");
 
-          if (pageInfo && masterPageInfo) {
-            const masterPageId = masterPageInfo.config.page_id;
-            const contentElementId = masterPageInfo.config.master_page.content_element;
+        if (pageInfo && masterPageInfo) {
+          const masterPageId = masterPageInfo.config.page_id;
+          const contentElementId =
+            masterPageInfo.config.master_page.content_element;
 
-            if (pageInfo.config.page_id === masterPageId) {
-              $(this.root).find('#floorplan').append(svg);
+          if (pageInfo.config.page_id === masterPageId) {
+            $(this.root).find("#floorplan").append(svg);
+          } else {
+            const $masterPageElement = $(this.root).find("#" + masterPageId);
+            const $contentElement = $(this.root).find("#" + contentElementId);
+
+            const height = Number.parseFloat($(svg).attr("height"));
+            const width = Number.parseFloat($(svg).attr("width"));
+            if (!$(svg).attr("viewBox")) {
+              $(svg).attr("viewBox", `0 0 ${width} ${height}`);
             }
-            else {
-              const $masterPageElement = $(this.root).find('#' + masterPageId);
-              const $contentElement = $(this.root).find('#' + contentElementId);
 
-              const height = Number.parseFloat($(svg).attr('height'));
-              const width = Number.parseFloat($(svg).attr('width'));
-              if (!$(svg).attr('viewBox')) {
-                $(svg).attr('viewBox', `0 0 ${width} ${height}`);
-              }
+            $(svg)
+              .attr("preserveAspectRatio", "xMinYMin meet")
+              .attr("height", $contentElement.attr("height"))
+              .attr("width", $contentElement.attr("width"))
+              .attr("x", $contentElement.attr("x"))
+              .attr("y", $contentElement.attr("y"));
 
-              $(svg)
-                .attr('preserveAspectRatio', 'xMinYMin meet')
-                .attr('height', $contentElement.attr('height'))
-                .attr('width', $contentElement.attr('width'))
-                .attr('x', $contentElement.attr('x'))
-                .attr('y', $contentElement.attr('y'));
-
-              $contentElement.parent().append(svg);
-            }
+            $contentElement.parent().append(svg);
           }
-          else {
-            $(this.root).find('#floorplan').append(svg);
-          }
+        } else {
+          $(this.root).find("#floorplan").append(svg);
+        }
 
-          // Enable pan / zoom if enabled in config
-          if (this.isOptionEnabled(this.config.pan_zoom)) {
-            svgPanZoom($(svg)[0], {
-              zoomEnabled: true,
-              controlIconsEnabled: true,
-              fit: true,
-              center: true,
-            });
-          }
+        // Enable pan / zoom if enabled in config
+        if (this.isOptionEnabled(this.config.pan_zoom)) {
+          svgPanZoom($(svg)[0], {
+            zoomEnabled: true,
+            controlIconsEnabled: true,
+            fit: true,
+            center: true,
+          });
+        }
 
-          return Promise.resolve(svg);
-        });
+        return Promise.resolve(svg);
+      });
     }
 
     loadImage(imageUrl, svgElementInfo, entityId, rule) {
-      if (imageUrl.toLowerCase().indexOf('.svg') >= 0) {
+      if (imageUrl.toLowerCase().indexOf(".svg") >= 0) {
         return this.loadSvgImage(imageUrl, svgElementInfo, entityId, rule);
-      }
-      else {
+      } else {
         return this.loadBitmapImage(imageUrl, svgElementInfo, entityId, rule);
       }
     }
 
     loadBitmapImage(imageUrl, svgElementInfo, entityId, rule) {
-      return this.fetchImageResource(imageUrl, false, true)
-        .then(imageData => {
-          this.logDebug('IMAGE', `${entityId} (setting image: ${imageUrl})`);
+      return this.fetchImageResource(imageUrl, false, true).then(
+        (imageData) => {
+          this.logDebug("IMAGE", `${entityId} (setting image: ${imageUrl})`);
 
           let svgElement = svgElementInfo.svgElement; // assume the target element already exists
 
-          if (!$(svgElement).is('image')) {
-            svgElement = this.createImageElement(svgElementInfo.originalSvgElement);
+          if (!$(svgElement).is("image")) {
+            svgElement = this.createImageElement(
+              svgElementInfo.originalSvgElement
+            );
 
-            $(svgElement).append(document.createElementNS('http://www.w3.org/2000/svg', 'title'))
-              .mayTriggerLongClicks().off('shortClick')
-              .mayTriggerLongClicks().off('longClick')
-              .mayTriggerLongClicks().on('shortClick', this.onEntityClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: rule }))
-              .mayTriggerLongClicks().on('longClick', this.onEntityLongClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: rule }))
-              .css('cursor', 'pointer')
-              .addClass('ha-entity');
-            svgElementInfo.svgElement = this.replaceElement(svgElementInfo.svgElement, svgElement);
+            $(svgElement)
+              .append(
+                document.createElementNS("http://www.w3.org/2000/svg", "title")
+              )
+              .mayTriggerLongClicks()
+              .off("shortClick")
+              .mayTriggerLongClicks()
+              .off("longClick")
+              .mayTriggerLongClicks()
+              .on(
+                "shortClick",
+                this.onEntityClick.bind({
+                  instance: this,
+                  svgElementInfo: svgElementInfo,
+                  entityId: entityId,
+                  rule: rule,
+                })
+              )
+              .mayTriggerLongClicks()
+              .on(
+                "longClick",
+                this.onEntityLongClick.bind({
+                  instance: this,
+                  svgElementInfo: svgElementInfo,
+                  entityId: entityId,
+                  rule: rule,
+                })
+              )
+              .css("cursor", "pointer")
+              .addClass("ha-entity");
+            svgElementInfo.svgElement = this.replaceElement(
+              svgElementInfo.svgElement,
+              svgElement
+            );
           }
 
-          const existingHref = svgElement.getAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href');
+          const existingHref = svgElement.getAttributeNS(
+            "http://www.w3.org/1999/xlink",
+            "xlink:href"
+          );
           if (existingHref !== imageData) {
-            svgElement.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', imageUrl);
+            svgElement.setAttributeNS(
+              "http://www.w3.org/1999/xlink",
+              "xlink:href",
+              imageUrl
+            );
           }
 
           return Promise.resolve(svgElement);
-        });
+        }
+      );
     }
 
     loadSvgImage(imageUrl, svgElementInfo, entityId, rule) {
-      return this.fetchTextResource(imageUrl, true)
-        .then(result => {
-          this.logDebug('IMAGE', `${entityId} (setting image: ${imageUrl})`);
+      return this.fetchTextResource(imageUrl, true).then((result) => {
+        this.logDebug("IMAGE", `${entityId} (setting image: ${imageUrl})`);
 
-          let svgElement = $(result).siblings('svg')[0];
-          svgElement = svgElement ? svgElement : $(result);
+        let svgElement = $(result).siblings("svg")[0];
+        svgElement = svgElement ? svgElement : $(result);
 
-          const height = Number.parseFloat($(svgElement).attr('height'));
-          const width = Number.parseFloat($(svgElement).attr('width'));
-          if (!$(svgElement).attr('viewBox')) {
-            $(svgElement).attr('viewBox', `0 0 ${width} ${height}`);
-          }
+        const height = Number.parseFloat($(svgElement).attr("height"));
+        const width = Number.parseFloat($(svgElement).attr("width"));
+        if (!$(svgElement).attr("viewBox")) {
+          $(svgElement).attr("viewBox", `0 0 ${width} ${height}`);
+        }
 
+        $(svgElement)
+          .attr("id", svgElementInfo.svgElement.id)
+          .attr("preserveAspectRatio", "xMinYMin meet")
+          .attr("height", svgElementInfo.originalBBox.height)
+          .attr("width", svgElementInfo.originalBBox.width)
+          .attr("x", svgElementInfo.originalBBox.x)
+          .attr("y", svgElementInfo.originalBBox.y);
+
+        $(svgElement)
+          .find("*")
+          .append(
+            document.createElementNS("http://www.w3.org/2000/svg", "title")
+          )
+          .off("shortClick")
+          .mayTriggerLongClicks()
+          .on(
+            "shortClick",
+            this.onEntityClick.bind({
+              instance: this,
+              svgElementInfo: svgElementInfo,
+              entityId: entityId,
+              rule: rule,
+            })
+          )
+          .css("cursor", "pointer")
+          .addClass("ha-entity");
+
+        if (rule && rule.long_click) {
+          console.log("Hej1113");
+          $(svgElement).mayTriggerLongClicks().off("longClick");
           $(svgElement)
-            .attr('id', svgElementInfo.svgElement.id)
-            .attr('preserveAspectRatio', 'xMinYMin meet')
-            .attr('height', svgElementInfo.originalBBox.height)
-            .attr('width', svgElementInfo.originalBBox.width)
-            .attr('x', svgElementInfo.originalBBox.x)
-            .attr('y', svgElementInfo.originalBBox.y);
+            .mayTriggerLongClicks()
+            .on(
+              "longClick",
+              this.onEntityLongClick.bind({
+                instance: this,
+                svgElementInfo: svgElementInfo,
+                entityId: entityId,
+                rule: rule,
+              })
+            );
+        }
 
-          $(svgElement).find('*').append(document.createElementNS('http://www.w3.org/2000/svg', 'title')).off('shortClick')
-            .mayTriggerLongClicks().on('shortClick', this.onEntityClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: rule }))
-            .css('cursor', 'pointer')
-            .addClass('ha-entity');
+        svgElementInfo.svgElement = this.replaceElement(
+          svgElementInfo.svgElement,
+          svgElement
+        );
 
-           if (rule && rule.long_click) {
-             $(svgElement).mayTriggerLongClicks().off('longClick');
-             $(svgElement).mayTriggerLongClicks().on('longClick', this.onEntityLongClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: rule }));
-           }
-
-
-          svgElementInfo.svgElement = this.replaceElement(svgElementInfo.svgElement, svgElement);
-
-          return Promise.resolve(svgElement);
-        })
+        return Promise.resolve(svgElement);
+      });
     }
 
     replaceElement(prevousSvgElement, svgElement) {
       const $parent = $(prevousSvgElement).parent();
 
-      $(prevousSvgElement).find('*')
-        .mayTriggerLongClicks().off('shortClick');
+      $(prevousSvgElement).find("*").mayTriggerLongClicks().off("shortClick");
 
-      $(prevousSvgElement)
-        .mayTriggerLongClicks().off('shortClick')
-        .remove();
+      $(prevousSvgElement).mayTriggerLongClicks().off("shortClick").remove();
 
       $parent.append(svgElement);
 
@@ -13409,16 +13481,22 @@ module.exports = Yaml;
     /***************************************************************************************************************************/
 
     initTimeDifference() {
-      this.hass.connection.socket.addEventListener('message', event => {
+      this.hass.connection.socket.addEventListener("message", (event) => {
         const data = JSON.parse(event.data);
 
         // Store the time difference between the local web browser and the Home Assistant server
         if (data.event && data.event.time_fired) {
           const lastEventFiredTime = new Date(data.event.time_fired);
           const currentDateTime = new Date();
-          this.timeDifferenceMs = currentDateTime.getTime() - lastEventFiredTime.getTime();
+          this.timeDifferenceMs =
+            currentDateTime.getTime() - lastEventFiredTime.getTime();
 
-          this.logDebug('SYSTEM', `Client is ${(this.timeDifferenceMs >= 0) ? 'ahead of' : 'behind'} server by ${Math.abs(this.timeDifferenceMs)} miliseconds`);
+          this.logDebug(
+            "SYSTEM",
+            `Client is ${
+              this.timeDifferenceMs >= 0 ? "ahead of" : "behind"
+            } server by ${Math.abs(this.timeDifferenceMs)} miliseconds`
+          );
         }
       });
     }
@@ -13432,16 +13510,20 @@ module.exports = Yaml;
 
     initPageDisplay() {
       if (this.config.preload_cards) {
-        const preloadCard = type => window.loadCardHelpers()
-           .then(({ createCardElement }) => createCardElement({type}))
+        const preloadCard = (type) =>
+          window
+            .loadCardHelpers()
+            .then(({ createCardElement }) => createCardElement({ type }));
 
         for (let card of this.config.preload_cards) {
           preloadCard(card);
         }
       }
       if (this.config.preload_rows) {
-        const preloadRow = type => window.loadCardHelpers()
-           .then(({ createRowElement }) => createRowElement({type}))
+        const preloadRow = (type) =>
+          window
+            .loadCardHelpers()
+            .then(({ createRowElement }) => createRowElement({ type }));
 
         for (let row of this.config.preload_rows) {
           preloadRow(row);
@@ -13449,17 +13531,19 @@ module.exports = Yaml;
       }
 
       if (this.config.pages) {
-        Object.keys(this.pageInfos).map(key => {
+        Object.keys(this.pageInfos).map((key) => {
           const pageInfo = this.pageInfos[key];
 
-          $(pageInfo.svg).css('opacity', 1);
-          $(pageInfo.svg).css('display', pageInfo.isMaster || pageInfo.isDefault ? 'initial' : 'none'); // Show the first page
+          $(pageInfo.svg).css("opacity", 1);
+          $(pageInfo.svg).css(
+            "display",
+            pageInfo.isMaster || pageInfo.isDefault ? "initial" : "none"
+          ); // Show the first page
         });
-      }
-      else {
+      } else {
         // Show the SVG
-        $(this.config.svg).css('opacity', 1);
-        $(this.config.svg).css('display', 'initial');
+        $(this.config.svg).css("opacity", 1);
+        $(this.config.svg).css("display", "initial");
       }
     }
 
@@ -13487,20 +13571,27 @@ module.exports = Yaml;
       let variableName;
       let value;
 
-      if (typeof variable === 'string') {
+      if (typeof variable === "string") {
         variableName = variable;
-      }
-      else {
+      } else {
         variableName = variable.name;
 
         value = variable.value;
         if (variable.value_template) {
-          value = this.evaluate(variable.value_template, variableName, undefined);
+          value = this.evaluate(
+            variable.value_template,
+            variableName,
+            undefined
+          );
         }
       }
 
       if (!this.entityInfos[variableName]) {
-        let entityInfo = { entityId: variableName, ruleInfos: [], lastState: undefined };
+        let entityInfo = {
+          entityId: variableName,
+          ruleInfos: [],
+          lastState: undefined,
+        };
         this.entityInfos[variableName] = entityInfo;
       }
 
@@ -13521,7 +13612,9 @@ module.exports = Yaml;
 
       const startup = this.config.startup;
       if (startup && startup.action) {
-        actions = actions.concat(Array.isArray(startup.action) ? startup.action : [startup.action]);
+        actions = actions.concat(
+          Array.isArray(startup.action) ? startup.action : [startup.action]
+        );
       }
 
       if (this.config.pages) {
@@ -13530,17 +13623,23 @@ module.exports = Yaml;
 
           const startup = pageInfo.config.startup;
           if (startup && startup.action) {
-            actions = actions.concat(Array.isArray(startup.action) ? startup.action : [startup.action]);
+            actions = actions.concat(
+              Array.isArray(startup.action) ? startup.action : [startup.action]
+            );
           }
         }
       }
 
       for (let action of actions) {
         if (action.service || action.service_template) {
-          const actionService = this.getActionService(action, undefined, undefined);
+          const actionService = this.getActionService(
+            action,
+            undefined,
+            undefined
+          );
 
           switch (this.getDomain(actionService)) {
-            case 'floorplan':
+            case "floorplan":
               this.callFloorplanService(action, undefined, undefined);
               break;
 
@@ -13558,23 +13657,31 @@ module.exports = Yaml;
 
     initFloorplan(svg, config) {
       if (!config.rules) {
-        return Promise.resolve();;
+        return Promise.resolve();
       }
 
-      const svgElements = $(svg).find('*').toArray();
+      const svgElements = $(svg).find("*").toArray();
 
       this.initLastMotion(config, svg, svgElements);
       this.initRules(config, svg, svgElements);
 
-      return Promise.resolve();;
+      return Promise.resolve();
     }
 
     initLastMotion(config, svg, svgElements) {
       // Add the last motion entity if required
-      if (config.last_motion && config.last_motion.entity && config.last_motion.class) {
+      if (
+        config.last_motion &&
+        config.last_motion.entity &&
+        config.last_motion.class
+      ) {
         this.lastMotionConfig = config.last_motion;
 
-        const entityInfo = { entityId: config.last_motion.entity, ruleInfos: [], lastState: undefined };
+        const entityInfo = {
+          entityId: config.last_motion.entity,
+          ruleInfos: [],
+          lastState: undefined,
+        };
         this.entityInfos[config.last_motion.entity] = entityInfo;
       }
     }
@@ -13583,17 +13690,25 @@ module.exports = Yaml;
       // Apply default options to rules that don't override the options explictly
       if (config.defaults) {
         for (let rule of config.rules) {
-          rule.hover_over = (rule.hover_over === undefined) ? config.defaults.hover_over : rule.hover_over;
-          rule.more_info = (rule.more_info === undefined) ? config.defaults.more_info : rule.more_info;
-          rule.propagate = (rule.propagate === undefined) ? config.defaults.propagate : rule.propagate;
+          rule.hover_over =
+            rule.hover_over === undefined
+              ? config.defaults.hover_over
+              : rule.hover_over;
+          rule.more_info =
+            rule.more_info === undefined
+              ? config.defaults.more_info
+              : rule.more_info;
+          rule.propagate =
+            rule.propagate === undefined
+              ? config.defaults.propagate
+              : rule.propagate;
         }
       }
 
       for (let rule of config.rules) {
         if (rule.entity || rule.entities) {
           this.initEntityRule(rule, svg, svgElements);
-        }
-        else if (rule.element || rule.elements) {
+        } else if (rule.element || rule.elements) {
           this.initElementRule(rule, svg, svgElements);
         }
       }
@@ -13607,38 +13722,76 @@ module.exports = Yaml;
 
         let entityInfo = this.entityInfos[entityId];
         if (!entityInfo) {
-          entityInfo = { entityId: entityId, ruleInfos: [], lastState: undefined };
+          entityInfo = {
+            entityId: entityId,
+            ruleInfos: [],
+            lastState: undefined,
+          };
           this.entityInfos[entityId] = entityInfo;
         }
 
-        const ruleInfo = { rule: rule, svgElementInfos: {}, };
+        const ruleInfo = { rule: rule, svgElementInfos: {} };
         entityInfo.ruleInfos.push(ruleInfo);
 
-        const svgElement = svgElements.find(svgElement => svgElement.id === elementId);
+        const svgElement = svgElements.find(
+          (svgElement) => svgElement.id === elementId
+        );
         if (!svgElement) {
-          this.logWarning('CONFIG', `Cannot find element '${elementId}' in SVG file`);
+          this.logWarning(
+            "CONFIG",
+            `Cannot find element '${elementId}' in SVG file`
+          );
           continue;
         }
 
-        const svgElementInfo = this.addSvgElementToRule(svg, svgElement, ruleInfo);
+        const svgElementInfo = this.addSvgElementToRule(
+          svg,
+          svgElement,
+          ruleInfo
+        );
 
         const $svgElement = $(svgElementInfo.svgElement);
         if ($svgElement.length) {
           svgElementInfo.svgElement = $svgElement[0];
 
           // Create a title element (to support hover over text)
-          $svgElement.append(document.createElementNS('http://www.w3.org/2000/svg', 'title'));
+          $svgElement.append(
+            document.createElementNS("http://www.w3.org/2000/svg", "title")
+          );
 
-          if (ruleInfo.rule.action || (ruleInfo.rule.more_info !== false)) {
-            $svgElement.mayTriggerLongClicks().off('shortClick').on('shortClick', this.onEntityClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: ruleInfo.rule }));
-            $svgElement.css('cursor', 'pointer');
+          if (ruleInfo.rule.action || ruleInfo.rule.more_info !== false) {
+            $svgElement
+              .mayTriggerLongClicks()
+              .off("shortClick")
+              .on(
+                "shortClick",
+                this.onEntityClick.bind({
+                  instance: this,
+                  svgElementInfo: svgElementInfo,
+                  entityId: entityId,
+                  rule: ruleInfo.rule,
+                })
+              );
+            $svgElement.css("cursor", "pointer");
           }
           if (ruleInfo.rule.long_click) {
-            $svgElement.mayTriggerLongClicks().off('longClick').on('longClick', this.onEntityLongClick.bind({ instance: this, svgElementInfo: svgElementInfo, entityId: entityId, rule: ruleInfo.rule }));
-            $svgElement.css('cursor', 'pointer');
+            console.log("Hej1112");
+            $svgElement
+              .mayTriggerLongClicks()
+              .off("longClick")
+              .on(
+                "longClick",
+                this.onEntityLongClick.bind({
+                  instance: this,
+                  svgElementInfo: svgElementInfo,
+                  entityId: entityId,
+                  rule: ruleInfo.rule,
+                })
+              );
+            $svgElement.css("cursor", "pointer");
           }
 
-          $svgElement.addClass('ha-entity');
+          $svgElement.addClass("ha-entity");
 
           /*
           if ($svgElement.is('text') && ($svgElement[0].id === elementId)) {
@@ -13667,9 +13820,11 @@ module.exports = Yaml;
             for (let entityId of group.attributes.entity_id) {
               targetEntities.push({ entityId: entityId, elementId: entityId });
             }
-          }
-          else {
-            this.logWarning('CONFIG', `Cannot find '${entityId}' in Home Assistant groups`);
+          } else {
+            this.logWarning(
+              "CONFIG",
+              `Cannot find '${entityId}' in Home Assistant groups`
+            );
           }
         }
       }
@@ -13681,30 +13836,40 @@ module.exports = Yaml;
 
       // HA entities treated as is
       if (rule.entities) {
-        const entityIds = rule.entities.filter(x => (typeof x === 'string'));
+        const entityIds = rule.entities.filter((x) => typeof x === "string");
         for (let entityId of entityIds) {
           const entity = this.hass.states[entityId];
-          const isFloorplanVariable = (entityId.split('.')[0] === 'floorplan');
+          const isFloorplanVariable = entityId.split(".")[0] === "floorplan";
 
           if (entity || isFloorplanVariable) {
             const elementId = rule.element ? rule.element : entityId;
             targetEntities.push({ entityId: entityId, elementId: elementId });
-          }
-          else {
-            this.logWarning('CONFIG', `Cannot find '${entityId}' in Home Assistant entities`);
+          } else {
+            this.logWarning(
+              "CONFIG",
+              `Cannot find '${entityId}' in Home Assistant entities`
+            );
           }
         }
 
-        const entityObjects = rule.entities.filter(x => (typeof x !== 'string'));
+        const entityObjects = rule.entities.filter(
+          (x) => typeof x !== "string"
+        );
         for (let entityObject of entityObjects) {
           const entity = this.hass.states[entityObject.entity];
-          const isFloorplanVariable = (entityObject.entity.split('.')[0] === 'floorplan');
+          const isFloorplanVariable =
+            entityObject.entity.split(".")[0] === "floorplan";
 
           if (entity || isFloorplanVariable) {
-            targetEntities.push({ entityId: entityObject.entity, elementId: entityObject.element });
-          }
-          else {
-            this.logWarning('CONFIG', `Cannot find '${entityObject.entity}' in Home Assistant entities`);
+            targetEntities.push({
+              entityId: entityObject.entity,
+              elementId: entityObject.element,
+            });
+          } else {
+            this.logWarning(
+              "CONFIG",
+              `Cannot find '${entityObject.entity}' in Home Assistant entities`
+            );
           }
         }
       }
@@ -13718,7 +13883,9 @@ module.exports = Yaml;
       }
 
       for (let elementId of rule.elements) {
-        const svgElement = svgElements.find(svgElement => svgElement.id === elementId);
+        const svgElement = svgElements.find(
+          (svgElement) => svgElement.id === elementId
+        );
         if (svgElement) {
           let elementInfo = this.elementInfos[elementId];
           if (!elementInfo) {
@@ -13726,18 +13893,42 @@ module.exports = Yaml;
             this.elementInfos[elementId] = elementInfo;
           }
 
-          const ruleInfo = { rule: rule, svgElementInfos: {}, };
+          const ruleInfo = { rule: rule, svgElementInfos: {} };
           elementInfo.ruleInfos.push(ruleInfo);
 
-          const svgElementInfo = this.addSvgElementToRule(svg, svgElement, ruleInfo);
+          const svgElementInfo = this.addSvgElementToRule(
+            svg,
+            svgElement,
+            ruleInfo
+          );
 
           const $svgElement = $(svgElementInfo.svgElement);
 
-          $svgElement.mayTriggerLongClicks().off('shortClick').on('shortClick', this.onElementClick.bind({ instance: this, svgElementInfo: svgElementInfo, elementId: elementId, rule: rule }));
-          $svgElement.css('cursor', 'pointer');
+          $svgElement
+            .mayTriggerLongClicks()
+            .off("shortClick")
+            .on(
+              "shortClick",
+              this.onElementClick.bind({
+                instance: this,
+                svgElementInfo: svgElementInfo,
+                elementId: elementId,
+                rule: rule,
+              })
+            );
+          $svgElement.css("cursor", "pointer");
           if (ruleInfo.rule.long_click) {
-            $svgElement.mayTriggerLongClicks().off('longClick');
-            $svgElement.mayTriggerLongClicks().on('longClick', this.onElementLongClick.bind({ instance: this, svgElementInfo: svgElementInfo, elementId: elementId, rule: rule }));
+            console.log("Hej1113");
+            $svgElement.mayTriggerLongClicks().off("longClick");
+            $svgElement.mayTriggerLongClicks().on(
+              "longClick",
+              this.onElementLongClick.bind({
+                instance: this,
+                svgElementInfo: svgElementInfo,
+                elementId: elementId,
+                rule: rule,
+              })
+            );
           }
 
           /*
@@ -13753,13 +13944,17 @@ module.exports = Yaml;
           }
           */
 
-          const actions = Array.isArray(rule.action) ? rule.action : [rule.action];
+          const actions = Array.isArray(rule.action)
+            ? rule.action
+            : [rule.action];
           for (let action of actions) {
             if (action) {
               switch (action.service) {
-                case 'toggle':
+                case "toggle":
                   for (let otherElementId of action.data.elements) {
-                    const otherSvgElement = svgElements.find(svgElement => svgElement.id === otherElementId);
+                    const otherSvgElement = svgElements.find(
+                      (svgElement) => svgElement.id === otherElementId
+                    );
                     $(otherSvgElement).addClass(action.data.default_class);
                   }
                   break;
@@ -13769,9 +13964,8 @@ module.exports = Yaml;
               }
             }
           }
-        }
-        else {
-          this.logWarning('CONFIG', `Cannot find '${elementId}' in SVG file`);
+        } else {
+          this.logWarning("CONFIG", `Cannot find '${elementId}' in SVG file`);
         }
       }
     }
@@ -13781,13 +13975,15 @@ module.exports = Yaml;
 
       const bbox = svgElement.getBBox();
 
-      const rect = $(document.createElementNS('http://www.w3.org/2000/svg', 'rect'))
-        .attr('id', svgElement.id + '.background')
-        .attr('height', bbox.height + 1)
-        .attr('width', bbox.width + 2)
-        .attr('x', bbox.x - 1)
-        .attr('y', bbox.y - 0.5)
-        .css('fill-opacity', 0);
+      const rect = $(
+        document.createElementNS("http://www.w3.org/2000/svg", "rect")
+      )
+        .attr("id", svgElement.id + ".background")
+        .attr("height", bbox.height + 1)
+        .attr("width", bbox.width + 2)
+        .attr("x", bbox.x - 1)
+        .attr("y", bbox.y - 0.5)
+        .css("fill-opacity", 0);
 
       $(rect).insertBefore(svgElement);
     }
@@ -13812,27 +14008,29 @@ module.exports = Yaml;
     }
 
     addNestedSvgElementsToRule(svgElement, ruleInfo) {
-      $(svgElement).find('*').each((i, svgNestedElement) => {
-        ruleInfo.svgElementInfos[svgNestedElement.id] = {
-          entityId: svgElement.id,
-          svgElement: svgNestedElement,
-          originalSvgElement: svgNestedElement,
-          originalStroke: svgNestedElement.style.stroke,
-          originalFill: svgNestedElement.style.fill,
-          originalClasses: this.getArray(svgNestedElement.classList),
-          //originalBBox: svgNestedElement.getBBox(),
-          //originalClientRect: svgNestedElement.getBoundingClientRect(),
-        };
-      });
+      $(svgElement)
+        .find("*")
+        .each((i, svgNestedElement) => {
+          ruleInfo.svgElementInfos[svgNestedElement.id] = {
+            entityId: svgElement.id,
+            svgElement: svgNestedElement,
+            originalSvgElement: svgNestedElement,
+            originalStroke: svgNestedElement.style.stroke,
+            originalFill: svgNestedElement.style.fill,
+            originalClasses: this.getArray(svgNestedElement.classList),
+            //originalBBox: svgNestedElement.getBBox(),
+            //originalClientRect: svgNestedElement.getBoundingClientRect(),
+          };
+        });
     }
 
     createImageElement(svgElement) {
-      return $(document.createElementNS('http://www.w3.org/2000/svg', 'image'))
-        .attr('id', $(svgElement).attr('id'))
-        .attr('x', $(svgElement).attr('x'))
-        .attr('y', $(svgElement).attr('y'))
-        .attr('height', $(svgElement).attr('height'))
-        .attr('width', $(svgElement).attr('width'))[0];
+      return $(document.createElementNS("http://www.w3.org/2000/svg", "image"))
+        .attr("id", $(svgElement).attr("id"))
+        .attr("x", $(svgElement).attr("x"))
+        .attr("y", $(svgElement).attr("y"))
+        .attr("height", $(svgElement).attr("height"))
+        .attr("width", $(svgElement).attr("width"))[0];
       /*
               return $('object')
                 .attr('type', $(svgElement).attr('image/svg+xml'))
@@ -13844,7 +14042,6 @@ module.exports = Yaml;
                 */
     }
 
-
     getEntityInfo(id) {
       const entityInfo = this.entityInfos[id];
       const entityState = this.hass.states[id];
@@ -13854,7 +14051,10 @@ module.exports = Yaml;
           for (let svgElementId in ruleInfo.svgElementInfos) {
             const svgElementInfo = ruleInfo.svgElementInfos[svgElementId];
 
-            result = result + " " + this.getHoverOverText(svgElementInfo.svgElement, entityState);
+            result =
+              result +
+              " " +
+              this.getHoverOverText(svgElementInfo.svgElement, entityState);
           }
         }
       }
@@ -13862,43 +14062,47 @@ module.exports = Yaml;
     }
 
     getHoverOverText(element, entityState) {
-      const dateFormat = this.config.date_format ? this.config.date_format : 'DD-MMM-YYYY';
+      const dateFormat = this.config.date_format
+        ? this.config.date_format
+        : "DD-MMM-YYYY";
       var result = "";
-      $(element).find('title').each((i, titleElement) => {
-        const lastChangedElapsed = (new Date()).getTime() - new Date(entityState.last_changed);
-        const lastChangedDate = this.formatDate(entityState.last_changed);
+      $(element)
+        .find("title")
+        .each((i, titleElement) => {
+          const lastChangedElapsed =
+            new Date().getTime() - new Date(entityState.last_changed);
+          const lastChangedDate = this.formatDate(entityState.last_changed);
 
-        const lastUpdatedElapsed = (new Date()).getTime() - new Date(entityState.last_updated);
-        const lastUpdatedDate = this.formatDate(entityState.last_updated);
+          const lastUpdatedElapsed =
+            new Date().getTime() - new Date(entityState.last_updated);
+          const lastUpdatedDate = this.formatDate(entityState.last_updated);
 
-        let titleText = `${entityState.attributes.friendly_name}\n`;
-        titleText += `State: ${entityState.state}\n\n`;
+          let titleText = `${entityState.attributes.friendly_name}\n`;
+          titleText += `State: ${entityState.state}\n\n`;
 
-        Object.keys(entityState.attributes).map(key => {
-          titleText += `${key}: ${entityState.attributes[key]}\n`;
+          Object.keys(entityState.attributes).map((key) => {
+            titleText += `${key}: ${entityState.attributes[key]}\n`;
+          });
+          titleText += "\n";
+
+          titleText += `Last changed: ${lastChangedDate}\n`;
+          titleText += `Last updated: ${lastUpdatedDate}`;
+          result = result + titleText;
         });
-        titleText += '\n';
-
-        titleText += `Last changed: ${lastChangedDate}\n`;
-        titleText += `Last updated: ${lastUpdatedDate}`;
-        result = result + titleText;
-      });
       return result;
     }
-
-
 
     addClasses(entityId, svgElement, classes, propagate) {
       if (!classes || !classes.length) return;
 
       for (let className of classes) {
-        if ($(svgElement).hasClass('ha-leave-me-alone')) return;
+        if ($(svgElement).hasClass("ha-leave-me-alone")) return;
 
         if (!$(svgElement).hasClass(className)) {
-          this.logDebug('CLASS', `${entityId} (adding class: ${className})`);
+          this.logDebug("CLASS", `${entityId} (adding class: ${className})`);
           $(svgElement).addClass(className);
 
-          if ($(svgElement).is('text')) {
+          if ($(svgElement).is("text")) {
             /*
             $(svgElement).parent().find(`[id="${entityId}.background"]`).each((i, rectElement) => {
               if (!$(rectElement).hasClass(className + '-background')) {
@@ -13909,14 +14113,16 @@ module.exports = Yaml;
           }
         }
 
-        if (propagate || (propagate === undefined)) {
-          $(svgElement).find('*').each((i, svgNestedElement) => {
-            if (!$(svgNestedElement).hasClass('ha-leave-me-alone')) {
-              if (!$(svgNestedElement).hasClass(className)) {
-                $(svgNestedElement).addClass(className);
+        if (propagate || propagate === undefined) {
+          $(svgElement)
+            .find("*")
+            .each((i, svgNestedElement) => {
+              if (!$(svgNestedElement).hasClass("ha-leave-me-alone")) {
+                if (!$(svgNestedElement).hasClass(className)) {
+                  $(svgNestedElement).addClass(className);
+                }
               }
-            }
-          });
+            });
         }
       }
     }
@@ -13926,7 +14132,7 @@ module.exports = Yaml;
 
       for (let className of classes) {
         if ($(svgElement).hasClass(className)) {
-          this.logDebug('CLASS', `${entityId} (removing class: ${className})`);
+          this.logDebug("CLASS", `${entityId} (removing class: ${className})`);
           $(svgElement).removeClass(className);
 
           /*
@@ -13939,29 +14145,31 @@ module.exports = Yaml;
           }
           */
 
-          if (propagate || (propagate === undefined)) {
-            $(svgElement).find('*').each((i, svgNestedElement) => {
-              if ($(svgNestedElement).hasClass(className)) {
-                $(svgNestedElement).removeClass(className);
-              }
-            });
+          if (propagate || propagate === undefined) {
+            $(svgElement)
+              .find("*")
+              .each((i, svgNestedElement) => {
+                if ($(svgNestedElement).hasClass(className)) {
+                  $(svgNestedElement).removeClass(className);
+                }
+              });
           }
         }
       }
     }
 
     setEntityStyle(svgElementInfo, svgElement, entityInfo, ruleInfo) {
-      const stateConfig = ruleInfo.rule.states.find(stateConfig => (stateConfig.state === entityInfo.lastState.state));
+      const stateConfig = ruleInfo.rule.states.find(
+        (stateConfig) => stateConfig.state === entityInfo.lastState.state
+      );
       if (stateConfig) {
         const stroke = this.getStroke(stateConfig);
         if (stroke) {
           svgElement.style.stroke = stroke;
-        }
-        else {
+        } else {
           if (svgElementInfo.originalStroke) {
             svgElement.style.stroke = svgElementInfo.originalStroke;
-          }
-          else {
+          } else {
             // ???
           }
         }
@@ -13969,12 +14177,10 @@ module.exports = Yaml;
         const fill = this.getFill(stateConfig);
         if (fill) {
           svgElement.style.fill = fill;
-        }
-        else {
+        } else {
           if (svgElementInfo.originalFill) {
             svgElement.style.fill = svgElementInfo.originalFill;
-          }
-          else {
+          } else {
             // ???
           }
         }
@@ -13992,13 +14198,13 @@ module.exports = Yaml;
       changedEntityIds = changedEntityIds.concat(Object.keys(this.variables)); // always assume variables need updating
 
       if (changedEntityIds && changedEntityIds.length) {
-        const promises = changedEntityIds.map(entityId => this.handleEntity(entityId, isInitialLoad));
-        return Promise.all(promises)
-          .then(() => {
-            return Promise.resolve(changedEntityIds);
-          });
-      }
-      else {
+        const promises = changedEntityIds.map((entityId) =>
+          this.handleEntity(entityId, isInitialLoad)
+        );
+        return Promise.all(promises).then(() => {
+          return Promise.resolve(changedEntityIds);
+        });
+      } else {
         return Promise.resolve();
       }
     }
@@ -14014,7 +14220,8 @@ module.exports = Yaml;
         lastMotionEntityInfo = this.entityInfos[this.lastMotionConfig.entity];
         if (lastMotionEntityInfo && lastMotionEntityInfo.lastState) {
           oldLastMotionState = lastMotionEntityInfo.lastState.state;
-          newLastMotionState = this.hass.states[this.lastMotionConfig.entity].state;
+          newLastMotionState = this.hass.states[this.lastMotionConfig.entity]
+            .state;
         }
       }
 
@@ -14024,24 +14231,42 @@ module.exports = Yaml;
           const entityState = this.hass.states[entityId];
 
           if (isInitialLoad) {
-            this.logDebug('STATE', `${entityId}: ${entityState.state} (initial load)`);
+            this.logDebug(
+              "STATE",
+              `${entityId}: ${entityState.state} (initial load)`
+            );
             if (changedEntityIds.indexOf(entityId) < 0) {
               changedEntityIds.push(entityId);
             }
-          }
-          else if (entityInfo.lastState) {
+          } else if (entityInfo.lastState) {
             const oldState = entityInfo.lastState.state;
             const newState = entityState.state;
 
-            if (entityState.last_changed !== entityInfo.lastState.last_changed) {
-              this.logDebug('STATE', `${entityId}: ${newState} (last changed ${this.formatDate(entityInfo.lastState.last_changed)})`);
+            if (
+              entityState.last_changed !== entityInfo.lastState.last_changed
+            ) {
+              this.logDebug(
+                "STATE",
+                `${entityId}: ${newState} (last changed ${this.formatDate(
+                  entityInfo.lastState.last_changed
+                )})`
+              );
               if (changedEntityIds.indexOf(entityId) < 0) {
                 changedEntityIds.push(entityId);
               }
-            }
-            else {
-              if (!this.equal(entityInfo.lastState.attributes, entityState.attributes)) {
-                this.logDebug('STATE', `${entityId}: attributes (last updated ${this.formatDate(entityInfo.lastState.last_changed)})`);
+            } else {
+              if (
+                !this.equal(
+                  entityInfo.lastState.attributes,
+                  entityState.attributes
+                )
+              ) {
+                this.logDebug(
+                  "STATE",
+                  `${entityId}: attributes (last updated ${this.formatDate(
+                    entityInfo.lastState.last_changed
+                  )})`
+                );
                 if (changedEntityIds.indexOf(entityId) < 0) {
                   changedEntityIds.push(entityId);
                 }
@@ -14049,17 +14274,19 @@ module.exports = Yaml;
             }
 
             if (this.lastMotionConfig) {
-              if ((newLastMotionState !== oldLastMotionState) && (entityId.indexOf('binary_sensor') >= 0)) {
+              if (
+                newLastMotionState !== oldLastMotionState &&
+                entityId.indexOf("binary_sensor") >= 0
+              ) {
                 const friendlyName = entityState.attributes.friendly_name;
 
                 if (friendlyName === newLastMotionState) {
-                  this.logDebug('LAST_MOTION', `${entityId} (new)`);
+                  this.logDebug("LAST_MOTION", `${entityId} (new)`);
                   if (changedEntityIds.indexOf(entityId) < 0) {
                     changedEntityIds.push(entityId);
                   }
-                }
-                else if (friendlyName === oldLastMotionState) {
-                  this.logDebug('LAST_MOTION', `${entityId} (old)`);
+                } else if (friendlyName === oldLastMotionState) {
+                  this.logDebug("LAST_MOTION", `${entityId} (old)`);
                   if (changedEntityIds.indexOf(entityId) < 0) {
                     changedEntityIds.push(entityId);
                   }
@@ -14081,14 +14308,13 @@ module.exports = Yaml;
 
       entityInfo.lastState = Object.assign({}, entityState);
 
-      return this.handleEntityUpdateDom(entityInfo)
-        .then(() => {
-          this.handleEntityUpdateCss(entityInfo, isInitialLoad);
-          this.handleEntityUpdateLastMotionCss(entityInfo);
-          this.handleEntitySetHoverOver(entityInfo);
+      return this.handleEntityUpdateDom(entityInfo).then(() => {
+        this.handleEntityUpdateCss(entityInfo, isInitialLoad);
+        this.handleEntityUpdateLastMotionCss(entityInfo);
+        this.handleEntitySetHoverOver(entityInfo);
 
-          return Promise.resolve();
-        });
+        return Promise.resolve();
+      });
     }
 
     handleEntityUpdateDom(entityInfo) {
@@ -14101,11 +14327,12 @@ module.exports = Yaml;
         for (let svgElementId in ruleInfo.svgElementInfos) {
           const svgElementInfo = ruleInfo.svgElementInfos[svgElementId];
 
-          if ($(svgElementInfo.svgElement).is('text')) {
+          if ($(svgElementInfo.svgElement).is("text")) {
             this.handleEntityUpdateText(entityId, ruleInfo, svgElementInfo);
-          }
-          else if (ruleInfo.rule.image || ruleInfo.rule.image_template) {
-            promises.push(this.handleEntityUpdateImage(entityId, ruleInfo, svgElementInfo));
+          } else if (ruleInfo.rule.image || ruleInfo.rule.image_template) {
+            promises.push(
+              this.handleEntityUpdateImage(entityId, ruleInfo, svgElementInfo)
+            );
           }
         }
       }
@@ -14116,12 +14343,11 @@ module.exports = Yaml;
     handleElements(isInitialLoad) {
       const promises = [];
 
-      Object.keys(this.elementInfos).map(key => {
+      Object.keys(this.elementInfos).map((key) => {
         const elementInfo = this.elementInfos[key];
-        const promise = this.handleElementUpdateDom(elementInfo)
-          .then(() => {
-            return this.handleElementUpdateCss(elementInfo, isInitialLoad);
-          });
+        const promise = this.handleElementUpdateDom(elementInfo).then(() => {
+          return this.handleElementUpdateCss(elementInfo, isInitialLoad);
+        });
 
         promises.push(promise);
       });
@@ -14136,11 +14362,16 @@ module.exports = Yaml;
         for (let svgElementId in ruleInfo.svgElementInfos) {
           const svgElementInfo = ruleInfo.svgElementInfos[svgElementId];
 
-          if ($(svgElementInfo.svgElement).is('text')) {
+          if ($(svgElementInfo.svgElement).is("text")) {
             this.handleEntityUpdateText(svgElementId, ruleInfo, svgElementInfo);
-          }
-          else if (ruleInfo.rule.image || ruleInfo.rule.image_template) {
-            promises.push(this.handleEntityUpdateImage(svgElementId, ruleInfo, svgElementInfo));
+          } else if (ruleInfo.rule.image || ruleInfo.rule.image_template) {
+            promises.push(
+              this.handleEntityUpdateImage(
+                svgElementId,
+                ruleInfo,
+                svgElementInfo
+              )
+            );
           }
         }
       }
@@ -14150,16 +14381,19 @@ module.exports = Yaml;
 
     handleEntityUpdateText(entityId, ruleInfo, svgElementInfo) {
       const svgElement = svgElementInfo.svgElement;
-      const state = this.hass.states[entityId] ? this.hass.states[entityId].state : undefined;
+      const state = this.hass.states[entityId]
+        ? this.hass.states[entityId].state
+        : undefined;
 
-      const text = ruleInfo.rule.text_template ? this.evaluate(ruleInfo.rule.text_template, entityId, svgElement) : state;
+      const text = ruleInfo.rule.text_template
+        ? this.evaluate(ruleInfo.rule.text_template, entityId, svgElement)
+        : state;
 
-      const tspan = $(svgElement).find('tspan');
+      const tspan = $(svgElement).find("tspan");
       if (tspan.length) {
         $(tspan).text(text);
-      }
-      else {
-        const title = $(svgElement).find('title');
+      } else {
+        const title = $(svgElement).find("title");
         $(svgElement).text(text);
         if (title.length) {
           $(svgElement).append(title);
@@ -14191,9 +14425,11 @@ module.exports = Yaml;
     handleEntityUpdateImage(entityId, ruleInfo, svgElementInfo) {
       const svgElement = svgElementInfo.svgElement;
 
-      const imageUrl = ruleInfo.rule.image ? ruleInfo.rule.image : this.evaluate(ruleInfo.rule.image_template, entityId, svgElement);
+      const imageUrl = ruleInfo.rule.image
+        ? ruleInfo.rule.image
+        : this.evaluate(ruleInfo.rule.image_template, entityId, svgElement);
 
-      if (imageUrl && (ruleInfo.imageUrl !== imageUrl)) {
+      if (imageUrl && ruleInfo.imageUrl !== imageUrl) {
         ruleInfo.imageUrl = imageUrl;
 
         if (ruleInfo.imageLoader) {
@@ -14201,22 +14437,36 @@ module.exports = Yaml;
         }
 
         if (ruleInfo.rule.image_refresh_interval) {
-          const refreshInterval = parseInt(ruleInfo.rule.image_refresh_interval);
+          const refreshInterval = parseInt(
+            ruleInfo.rule.image_refresh_interval
+          );
 
-          ruleInfo.imageLoader = setInterval((imageUrl, svgElement) => {
-            this.loadImage(imageUrl, svgElementInfo, entityId, ruleInfo.rule)
-              .catch(error => {
+          ruleInfo.imageLoader = setInterval(
+            (imageUrl, svgElement) => {
+              this.loadImage(
+                imageUrl,
+                svgElementInfo,
+                entityId,
+                ruleInfo.rule
+              ).catch((error) => {
                 this.handleError(error);
               });
-          }, refreshInterval * 1000, imageUrl, svgElement);
+            },
+            refreshInterval * 1000,
+            imageUrl,
+            svgElement
+          );
         }
 
-        return this.loadImage(imageUrl, svgElementInfo, entityId, ruleInfo.rule)
-          .catch(error => {
-            this.handleError(error);
-          });
-      }
-      else {
+        return this.loadImage(
+          imageUrl,
+          svgElementInfo,
+          entityId,
+          ruleInfo.rule
+        ).catch((error) => {
+          this.handleError(error);
+        });
+      } else {
         return Promise.resolve();
       }
     }
@@ -14230,35 +14480,44 @@ module.exports = Yaml;
           for (let svgElementId in ruleInfo.svgElementInfos) {
             const svgElementInfo = ruleInfo.svgElementInfos[svgElementId];
 
-            this.handlEntitySetHoverOverText(svgElementInfo.svgElement, entityState);
+            this.handlEntitySetHoverOverText(
+              svgElementInfo.svgElement,
+              entityState
+            );
           }
         }
       }
     }
 
     handlEntitySetHoverOverText(element, entityState) {
-      const dateFormat = this.config.date_format ? this.config.date_format : 'DD-MMM-YYYY';
+      const dateFormat = this.config.date_format
+        ? this.config.date_format
+        : "DD-MMM-YYYY";
 
-      $(element).find('title').each((i, titleElement) => {
-        const lastChangedElapsed = (new Date()).getTime() - new Date(entityState.last_changed);
-        const lastChangedDate = this.formatDate(entityState.last_changed);
+      $(element)
+        .find("title")
+        .each((i, titleElement) => {
+          const lastChangedElapsed =
+            new Date().getTime() - new Date(entityState.last_changed);
+          const lastChangedDate = this.formatDate(entityState.last_changed);
 
-        const lastUpdatedElapsed = (new Date()).getTime() - new Date(entityState.last_updated);
-        const lastUpdatedDate = this.formatDate(entityState.last_updated);
+          const lastUpdatedElapsed =
+            new Date().getTime() - new Date(entityState.last_updated);
+          const lastUpdatedDate = this.formatDate(entityState.last_updated);
 
-        let titleText = `${entityState.attributes.friendly_name}\n`;
-        titleText += `State: ${entityState.state}\n\n`;
+          let titleText = `${entityState.attributes.friendly_name}\n`;
+          titleText += `State: ${entityState.state}\n\n`;
 
-        Object.keys(entityState.attributes).map(key => {
-          titleText += `${key}: ${entityState.attributes[key]}\n`;
+          Object.keys(entityState.attributes).map((key) => {
+            titleText += `${key}: ${entityState.attributes[key]}\n`;
+          });
+          titleText += "\n";
+
+          titleText += `Last changed: ${lastChangedDate}\n`;
+          titleText += `Last updated: ${lastUpdatedDate}`;
+
+          $(titleElement).html(titleText);
         });
-        titleText += '\n';
-
-        titleText += `Last changed: ${lastChangedDate}\n`;
-        titleText += `Last updated: ${lastUpdatedDate}`;
-
-        $(titleElement).html(titleText);
-      });
     }
 
     handleElementUpdateCss(elementInfo, isInitialLoad) {
@@ -14280,19 +14539,23 @@ module.exports = Yaml;
         for (let svgElementId in ruleInfo.svgElementInfos) {
           const svgElementInfo = ruleInfo.svgElementInfos[svgElementId];
 
-          if (svgElementInfo.svgElement) { // images may not have been updated yet
+          if (svgElementInfo.svgElement) {
+            // images may not have been updated yet
             this.handleUpdateCss(entityInfo, svgElementInfo, ruleInfo);
           }
         }
       }
     }
 
-    getStateConfigClasses(stateConfig) { // support class: or classes:
+    getStateConfigClasses(stateConfig) {
+      // support class: or classes:
       if (!stateConfig) return [];
       if (Array.isArray(stateConfig.class)) return stateConfig.class;
-      if (typeof stateConfig.class === "string") return stateConfig.class.split(" ").map(x => x.trim());
+      if (typeof stateConfig.class === "string")
+        return stateConfig.class.split(" ").map((x) => x.trim());
       if (Array.isArray(stateConfig.classes)) return stateConfig.classes;
-      if (typeof stateConfig.classes === "string") return stateConfig.classes.split(" ").map(x => x.trim());
+      if (typeof stateConfig.classes === "string")
+        return stateConfig.classes.split(" ").map((x) => x.trim());
       return [];
     }
 
@@ -14304,32 +14567,50 @@ module.exports = Yaml;
       const obsoleteClasses = [];
 
       if (ruleInfo.rule.class_template) {
-        targetClasses = this.evaluate(ruleInfo.rule.class_template, entityId, svgElement).split(" ");
+        targetClasses = this.evaluate(
+          ruleInfo.rule.class_template,
+          entityId,
+          svgElement
+        ).split(" ");
       }
 
       // Get the config for the current state
       if (ruleInfo.rule.states) {
         const entityState = this.hass.states[entityId];
 
-        const stateConfig = ruleInfo.rule.states.find(stateConfig => (stateConfig.state === entityState.state));
+        const stateConfig = ruleInfo.rule.states.find(
+          (stateConfig) => stateConfig.state === entityState.state
+        );
         targetClasses = this.getStateConfigClasses(stateConfig);
 
         // Remove any other previously-added state classes
         for (let otherStateConfig of ruleInfo.rule.states) {
-          if (!stateConfig || (otherStateConfig.state !== stateConfig.state)) {
-            const otherStateClasses = this.getStateConfigClasses(otherStateConfig);
+          if (!stateConfig || otherStateConfig.state !== stateConfig.state) {
+            const otherStateClasses = this.getStateConfigClasses(
+              otherStateConfig
+            );
             for (let otherStateClass of otherStateClasses) {
-              if (otherStateClass && (targetClasses.indexOf(otherStateClass) < 0) && (otherStateClass !== 'ha-entity') && $(svgElement).hasClass(otherStateClass) && (svgElementInfo.originalClasses.indexOf(otherStateClass) < 0)) {
+              if (
+                otherStateClass &&
+                targetClasses.indexOf(otherStateClass) < 0 &&
+                otherStateClass !== "ha-entity" &&
+                $(svgElement).hasClass(otherStateClass) &&
+                svgElementInfo.originalClasses.indexOf(otherStateClass) < 0
+              ) {
                 obsoleteClasses.push(otherStateClass);
               }
             }
           }
         }
-      }
-      else {
+      } else {
         if (svgElement.classList) {
           for (let otherClass of this.getArray(svgElement.classList)) {
-            if ((targetClasses.indexOf(otherClass) < 0) && (otherClass !== 'ha-entity') && $(svgElement).hasClass(otherClass) && (svgElementInfo.originalClasses.indexOf(otherClass) < 0)) {
+            if (
+              targetClasses.indexOf(otherClass) < 0 &&
+              otherClass !== "ha-entity" &&
+              $(svgElement).hasClass(otherClass) &&
+              svgElementInfo.originalClasses.indexOf(otherClass) < 0
+            ) {
               obsoleteClasses.push(otherClass);
             }
           }
@@ -14338,10 +14619,20 @@ module.exports = Yaml;
 
       // Remove any obsolete classes from the entity
       //this.logDebug(`${entityId}: Removing obsolete classes: ${obsoleteClasses.join(', ')}`);
-      this.removeClasses(entityId, svgElement, obsoleteClasses, ruleInfo.rule.propagate);
+      this.removeClasses(
+        entityId,
+        svgElement,
+        obsoleteClasses,
+        ruleInfo.rule.propagate
+      );
 
       // Add the target classes to the entity
-      this.addClasses(entityId, svgElement, targetClasses, ruleInfo.rule.propagate);
+      this.addClasses(
+        entityId,
+        svgElement,
+        targetClasses,
+        ruleInfo.rule.propagate
+      );
     }
 
     handleUpdateElementCss(svgElementInfo, ruleInfo) {
@@ -14350,25 +14641,45 @@ module.exports = Yaml;
 
       let targetClasses = undefined;
       if (ruleInfo.rule.class_template) {
-        targetClasses = this.evaluate(ruleInfo.rule.class_template, entityId, svgElement).split(" ");
+        targetClasses = this.evaluate(
+          ruleInfo.rule.class_template,
+          entityId,
+          svgElement
+        ).split(" ");
       }
 
       const obsoleteClasses = [];
       for (let otherClass of this.getArray(svgElement.classList)) {
-        if ((targetClasses.indexOf(otherClass) < 0) && (otherClass !== 'ha-entity') && $(svgElement).hasClass(otherClass) && (svgElementInfo.originalClasses.indexOf(otherClass) < 0)) {
+        if (
+          targetClasses.indexOf(otherClass) < 0 &&
+          otherClass !== "ha-entity" &&
+          $(svgElement).hasClass(otherClass) &&
+          svgElementInfo.originalClasses.indexOf(otherClass) < 0
+        ) {
           obsoleteClasses.push(otherClass);
         }
       }
 
       // Remove any obsolete classes from the entity
-      this.removeClasses(entityId, svgElement, obsoleteClasses, ruleInfo.rule.propagate);
+      this.removeClasses(
+        entityId,
+        svgElement,
+        obsoleteClasses,
+        ruleInfo.rule.propagate
+      );
 
       // Add the target class to the entity
-      this.addClasses(entityId, svgElement, targetClasses, ruleInfo.rule.propagate);
+      this.addClasses(
+        entityId,
+        svgElement,
+        targetClasses,
+        ruleInfo.rule.propagate
+      );
     }
 
     handleEntityUpdateLastMotionCss(entityInfo) {
-      if (!this.lastMotionConfig || !this.cssRules || !this.cssRules.length) return;
+      if (!this.lastMotionConfig || !this.cssRules || !this.cssRules.length)
+        return;
 
       const entityId = entityInfo.entityId;
       const entityState = this.hass.states[entityId];
@@ -14380,16 +14691,30 @@ module.exports = Yaml;
           const svgElementInfo = ruleInfo.svgElementInfos[svgElementId];
           const svgElement = svgElementInfo.svgElement;
 
-          const stateConfigClasses = this.getStateConfigClasses(this.lastMotionConfig);
+          const stateConfigClasses = this.getStateConfigClasses(
+            this.lastMotionConfig
+          );
 
-          if (this.hass.states[this.lastMotionConfig.entity] &&
-            (entityState.attributes.friendly_name === this.hass.states[this.lastMotionConfig.entity].state)) {
+          if (
+            this.hass.states[this.lastMotionConfig.entity] &&
+            entityState.attributes.friendly_name ===
+              this.hass.states[this.lastMotionConfig.entity].state
+          ) {
             //this.logDebug(`${entityId}: Adding last motion class '${this.lastMotionConfig.class}'`);
-            this.addClasses(entityId, svgElement, stateConfigClasses, ruleInfo.propagate);
-          }
-          else {
+            this.addClasses(
+              entityId,
+              svgElement,
+              stateConfigClasses,
+              ruleInfo.propagate
+            );
+          } else {
             //this.logDebug(`${entityId}: Removing last motion class '${this.lastMotionConfig.class}'`);
-            this.removeClasses(entityId, svgElement, stateConfigClasses, ruleInfo.propagate);
+            this.removeClasses(
+              entityId,
+              svgElement,
+              stateConfigClasses,
+              ruleInfo.propagate
+            );
           }
         }
       }
@@ -14400,11 +14725,15 @@ module.exports = Yaml;
     /***************************************************************************************************************************/
 
     isOptionEnabled(option) {
-      return ((option === null) || (option !== undefined));
+      return option === null || option !== undefined;
     }
 
     isLastMotionEnabled() {
-      return this.lastMotionConfig && this.config.last_motion.entity && this.config.last_motion.class;
+      return (
+        this.lastMotionConfig &&
+        this.config.last_motion.entity &&
+        this.config.last_motion.class
+      );
     }
 
     validateConfig(config) {
@@ -14412,31 +14741,48 @@ module.exports = Yaml;
 
       if (!config.pages && !config.rules) {
         this.setIsLoading(false);
-        this.logError('CONFIG', `Cannot find 'pages' nor 'rules' in floorplan configuration`);
+        this.logError(
+          "CONFIG",
+          `Cannot find 'pages' nor 'rules' in floorplan configuration`
+        );
         isValid = false;
-      }
-      else {
+      } else {
         if (config.pages) {
           if (!config.pages.length) {
-            this.logError('CONFIG', `The 'pages' section must contain one or more pages in floorplan configuration`);
+            this.logError(
+              "CONFIG",
+              `The 'pages' section must contain one or more pages in floorplan configuration`
+            );
             isValid = false;
           }
-        }
-        else {
+        } else {
           if (!config.rules) {
-            this.logError('CONFIG', `Cannot find 'rules' in floorplan configuration`);
+            this.logError(
+              "CONFIG",
+              `Cannot find 'rules' in floorplan configuration`
+            );
             isValid = false;
           }
 
-          let invalidRules = config.rules.filter(x => x.entities && x.elements);
+          let invalidRules = config.rules.filter(
+            (x) => x.entities && x.elements
+          );
           if (invalidRules.length) {
-            this.logError('CONFIG', `A rule cannot contain both 'entities' and 'elements' in floorplan configuration`);
+            this.logError(
+              "CONFIG",
+              `A rule cannot contain both 'entities' and 'elements' in floorplan configuration`
+            );
             isValid = false;
           }
 
-          invalidRules = config.rules.filter(x => !(x.entity || x.entities) && !(x.element || x.elements));
+          invalidRules = config.rules.filter(
+            (x) => !(x.entity || x.entities) && !(x.element || x.elements)
+          );
           if (invalidRules.length) {
-            this.logError('CONFIG', `A rule must contain either 'entities' or 'elements' in floorplan configuration`);
+            this.logError(
+              "CONFIG",
+              `A rule must contain either 'entities' or 'elements' in floorplan configuration`
+            );
             isValid = false;
           }
         }
@@ -14456,21 +14802,37 @@ module.exports = Yaml;
     }
 
     formatDate(date) {
-      if (!date) return '';
+      if (!date) return "";
 
-      return (typeof date === 'string') ?
-        new Date(date).toLocaleString() : date.toLocaleString();
+      return typeof date === "string"
+        ? new Date(date).toLocaleString()
+        : date.toLocaleString();
     }
 
     evaluate(code, entityId, svgElement) {
       try {
         const entityState = this.hass.states[entityId];
-        let functionBody = (code.indexOf('${') >= 0) ? `\`${code}\`;` : code;
-        functionBody = (functionBody.indexOf('return') >= 0) ? functionBody : `return ${functionBody};`;
-        const func = new Function('entity', 'entities', 'hass', 'config', 'element', functionBody);
-        return func(entityState, this.hass.states, this.hass, this.config, svgElement);
-      }
-      catch (err) {
+        let functionBody = code.indexOf("${") >= 0 ? `\`${code}\`;` : code;
+        functionBody =
+          functionBody.indexOf("return") >= 0
+            ? functionBody
+            : `return ${functionBody};`;
+        const func = new Function(
+          "entity",
+          "entities",
+          "hass",
+          "config",
+          "element",
+          functionBody
+        );
+        return func(
+          entityState,
+          this.hass.states,
+          this.hass,
+          this.config,
+          svgElement
+        );
+      } catch (err) {
         //  this.logError('ERROR', entityId);
         //  this.logError('ERROR', err);
       }
@@ -14484,48 +14846,83 @@ module.exports = Yaml;
       e.stopPropagation();
       e.preventDefault();
 
-      this.instance.onActionClick(this.svgElementInfo, this.elementId, this.elementId, this.rule);
+      this.instance.onActionClick(
+        this.svgElementInfo,
+        this.elementId,
+        this.elementId,
+        this.rule
+      );
     }
 
     onElementLongClick(e) {
       e.stopPropagation();
       e.preventDefault();
-      this.instance.onActionClick(this.svgElementInfo, this.elementId, this.elementId, null);
+      this.instance.onActionClick(
+        this.svgElementInfo,
+        this.elementId,
+        this.elementId,
+        null
+      );
     }
 
     onEntityClick(e) {
       e.stopPropagation();
       e.preventDefault();
-      this.instance.onActionClick(this.svgElementInfo, this.entityId, this.elementId, this.rule);
+      this.instance.onActionClick(
+        this.svgElementInfo,
+        this.entityId,
+        this.elementId,
+        this.rule
+      );
     }
-    
-    longClick(e){
+
+    longClick(e) {
       var modifiedRule = null;
       if (this.rule.long_click && this.rule.long_click.service) {
+        console.log("Hej1114");
         modifiedRule = JSON.parse(JSON.stringify(this.rule));
+
+        // Create the action-object, if it's not defined (to support longClick without action)
+        if (typeof modifiedRule.action === "undefined") {
+          modifiedRule.action = new Object();
+        }
+
         modifiedRule.action.service = modifiedRule.long_click.service;
-        if (this.rule.long_click.data) { 
-         modifiedRule.action.data = modifiedRule.long_click.data; 
-       }
+
+        if (this.rule.long_click.data) {
+          modifiedRule.action.data = modifiedRule.long_click.data;
+        }
       }
-      this.instance.onActionClick(this.svgElementInfo, this.entityId, this.elementId, modifiedRule);
-    }    
+      this.instance.onActionClick(
+        this.svgElementInfo,
+        this.entityId,
+        this.elementId,
+        modifiedRule
+      );
+    }
 
     onEntityLongClick(e) {
+      console.log("Hej1115");
       e.stopPropagation();
       e.preventDefault();
       setTimeout(this.instance.longClick.bind(this, e), 300);
-
     }
-
 
     onActionClick(svgElementInfo, entityId, elementId, rule) {
       let entityInfo = this.entityInfos[entityId];
-      const actionRuleInfo = rule !==  null && (entityInfo && entityInfo.ruleInfos.find(ruleInfo => ruleInfo.rule.action)) 	;
-      const actionRule = (rule !== null  && rule.action) ? rule : (actionRuleInfo ? actionRuleInfo.rule : undefined);
+      const actionRuleInfo =
+        rule !== null &&
+        entityInfo &&
+        entityInfo.ruleInfos.find((ruleInfo) => ruleInfo.rule.action);
+      const actionRule =
+        rule !== null && rule.action
+          ? rule
+          : actionRuleInfo
+          ? actionRuleInfo.rule
+          : undefined;
 
       if (!rule || !actionRule) {
-        if (rule == null || (entityId && (rule.more_info !== false))) {
+        if (rule == null || (entityId && rule.more_info !== false)) {
           this.openMoreInfo(entityId);
         }
         return;
@@ -14535,13 +14932,19 @@ module.exports = Yaml;
 
       const svgElement = svgElementInfo.svgElement;
 
-      const actions = Array.isArray(actionRule.action) ? actionRule.action : [actionRule.action];
+      const actions = Array.isArray(actionRule.action)
+        ? actionRule.action
+        : [actionRule.action];
       for (let action of actions) {
         if (action.service || action.service_template) {
-          const actionService = this.getActionService(action, entityId, svgElement);
+          const actionService = this.getActionService(
+            action,
+            entityId,
+            svgElement
+          );
 
           switch (this.getDomain(actionService)) {
-            case 'floorplan':
+            case "floorplan":
               this.callFloorplanService(action, entityId, svgElementInfo);
               break;
 
@@ -14555,7 +14958,7 @@ module.exports = Yaml;
       }
 
       if (!calledServiceCount) {
-        if (entityId && (actionRule.more_info !== false)) {
+        if (entityId && actionRule.more_info !== false) {
           this.openMoreInfo(entityId);
         }
       }
@@ -14568,55 +14971,62 @@ module.exports = Yaml;
       const actionData = this.getActionData(action, entityId, svgElement);
 
       switch (this.getService(actionService)) {
-        case 'class_toggle':
+        case "class_toggle":
           if (actionData) {
             const classes = actionData.classes;
 
             for (let otherElementId of actionData.elements) {
-              const otherSvgElement = $(svgElementInfo.svg).find(`[id="${otherElementId}"]`);
+              const otherSvgElement = $(svgElementInfo.svg).find(
+                `[id="${otherElementId}"]`
+              );
 
               if ($(otherSvgElement).hasClass(classes[0])) {
                 $(otherSvgElement).removeClass(classes[0]);
                 $(otherSvgElement).addClass(classes[1]);
-              }
-              else if ($(otherSvgElement).hasClass(classes[1])) {
+              } else if ($(otherSvgElement).hasClass(classes[1])) {
                 $(otherSvgElement).removeClass(classes[1]);
                 $(otherSvgElement).addClass(classes[0]);
-              }
-              else {
+              } else {
                 $(otherSvgElement).addClass(actionData.default_class);
               }
             }
           }
           break;
 
-        case 'page_navigate':
+        case "page_navigate":
           const page_id = actionData.page_id;
           const targetPageInfo = page_id && this.pageInfos[page_id];
 
           if (targetPageInfo) {
-            Object.keys(this.pageInfos).map(key => {
+            Object.keys(this.pageInfos).map((key) => {
               const pageInfo = this.pageInfos[key];
 
               if (!pageInfo.isMaster) {
-                if ($(pageInfo.svg).css('display') !== 'none') {
-                  $(pageInfo.svg).css('display', 'none');
+                if ($(pageInfo.svg).css("display") !== "none") {
+                  $(pageInfo.svg).css("display", "none");
                 }
               }
             });
 
-            $(targetPageInfo.svg).css('display', 'initial');
+            $(targetPageInfo.svg).css("display", "initial");
           }
           break;
 
-        case 'variable_set':
+        case "variable_set":
           if (actionData.variable) {
             const attributes = [];
 
             if (actionData.attributes) {
               for (let attribute of actionData.attributes) {
-                const attributeValue = this.getActionValue(attribute, entityId, svgElement);
-                attributes.push({ name: attribute.attribute, value: attributeValue });
+                const attributeValue = this.getActionValue(
+                  attribute,
+                  entityId,
+                  svgElement
+                );
+                attributes.push({
+                  name: attribute.attribute,
+                  value: attributeValue,
+                });
               }
             }
 
@@ -14646,7 +15056,8 @@ module.exports = Yaml;
         this.hass.states[variableName].state = value;
 
         for (let attribute of attributes) {
-          this.hass.states[variableName].attributes[attribute.name] = attribute.value;
+          this.hass.states[variableName].attributes[attribute.name] =
+            attribute.value;
         }
       }
 
@@ -14673,18 +15084,26 @@ module.exports = Yaml;
       const actionService = this.getActionService(action, entityId, svgElement);
       const actionData = this.getActionData(action, entityId, svgElement);
 
-      if (!actionData.entity_id && entityId) {
+      if (!actionData.entity_id && entityId && !action.no_entity_id) {
         actionData.entity_id = entityId;
       }
 
-      this.hass.callService(this.getDomain(actionService), this.getService(actionService), actionData);
+      this.hass.callService(
+        this.getDomain(actionService),
+        this.getService(actionService),
+        actionData
+      );
     }
 
     getActionData(action, entityId, svgElement) {
       let data = action.data ? action.data : {};
       if (action.data_template) {
-        const result = this.evaluate(action.data_template, entityId, svgElement);
-        data = (typeof result === 'string') ? JSON.parse(result) : result;
+        const result = this.evaluate(
+          action.data_template,
+          entityId,
+          svgElement
+        );
+        data = typeof result === "string" ? JSON.parse(result) : result;
       }
       return data;
     }
@@ -14713,17 +15132,16 @@ module.exports = Yaml;
       this.setIsLoading(false);
 
       if (msg.toLowerCase().indexOf("script error") >= 0) {
-        this.logError('SCRIPT', 'Script error: See browser console for detail');
-      }
-      else {
+        this.logError("SCRIPT", "Script error: See browser console for detail");
+      } else {
         const message = [
           msg,
-          'URL: ' + url,
-          'Line: ' + lineNo + ', column: ' + columnNo,
-          'Error: ' + JSON.stringify(error)
-        ].join('<br>');
+          "URL: " + url,
+          "Line: " + lineNo + ", column: " + columnNo,
+          "Error: " + JSON.stringify(error),
+        ].join("<br>");
 
-        this.logError('ERROR', message);
+        this.logError("ERROR", message);
       }
 
       return false;
@@ -14733,44 +15151,45 @@ module.exports = Yaml;
       let message = error;
       if (error.stack) {
         message = `${error.stack}`;
-      }
-      else if (error.message) {
+      } else if (error.message) {
         message = `${error.message}`;
       }
 
-      this.log('error', message);
+      this.log("error", message);
     }
 
     logError(area, message) {
-      this.log('error', `${area} ${message}`);
+      this.log("error", `${area} ${message}`);
     }
 
     logWarning(area, message) {
-      this.log('warning', `${area} ${message}`);
+      this.log("warning", `${area} ${message}`);
     }
 
     logInfo(area, message) {
-      this.log('info', `${area} ${message}`);
+      this.log("info", `${area} ${message}`);
     }
 
     logDebug(area, message) {
-      this.log('debug', `${area} ${message}`);
+      this.log("debug", `${area} ${message}`);
     }
 
     log(level, message) {
-      const text = `${this.formatDate(new Date())} ${level.toUpperCase()} ${message}`;
+      const text = `${this.formatDate(
+        new Date()
+      )} ${level.toUpperCase()} ${message}`;
 
-      if (this.config && this.config.debug && (this.config.debug !== false)) {
+      if (this.config && this.config.debug && this.config.debug !== false) {
         switch (level) {
-          case 'error':
+          case "error":
             console.error(text);
             break;
 
-          case 'warning':
+          case "warning":
             console.warn(text);
             break;
 
-          case 'error':
+          case "error":
             console.info(text);
             break;
 
@@ -14780,13 +15199,16 @@ module.exports = Yaml;
         }
       }
 
-      const isTargetLogLevel = this.logLevels && this.logLevels.length && (this.logLevels.indexOf(level) >= 0);
+      const isTargetLogLevel =
+        this.logLevels &&
+        this.logLevels.length &&
+        this.logLevels.indexOf(level) >= 0;
 
-      if ((!this.config && (level === 'error')) || isTargetLogLevel) {
+      if ((!this.config && level === "error") || isTargetLogLevel) {
         // Always log error messages that occur before the config has been loaded
-        const log = $(this.root).find('#log');
-        $(log).find('ul').prepend(`<li class="${level}">${text}</li>`)
-        $(log).css('display', 'block');
+        const log = $(this.root).find("#log");
+        $(log).find("ul").prepend(`<li class="${level}">${text}</li>`);
+        $(log).css("display", "block");
       }
     }
 
@@ -14801,14 +15223,22 @@ module.exports = Yaml;
 
       for (let cssRule of this.cssRules) {
         for (let stateConfigClass of stateConfigClasses) {
-          if (cssRule.selectorText && cssRule.selectorText.indexOf(`.${stateConfigClass}`) >= 0) {
+          if (
+            cssRule.selectorText &&
+            cssRule.selectorText.indexOf(`.${stateConfigClass}`) >= 0
+          ) {
             if (cssRule.style && cssRule.style.stroke) {
-              if (cssRule.style.stroke[0] === '#') {
+              if (cssRule.style.stroke[0] === "#") {
                 stroke = cssRule.style.stroke;
-              }
-              else {
-                const rgb = cssRule.style.stroke.substring(4).slice(0, -1).split(',').map(x => parseInt(x));
-                stroke = `#${rgb[0].toString(16)[0]}${rgb[1].toString(16)[0]}${rgb[2].toString(16)[0]}`;
+              } else {
+                const rgb = cssRule.style.stroke
+                  .substring(4)
+                  .slice(0, -1)
+                  .split(",")
+                  .map((x) => parseInt(x));
+                stroke = `#${rgb[0].toString(16)[0]}${rgb[1].toString(16)[0]}${
+                  rgb[2].toString(16)[0]
+                }`;
               }
             }
             break;
@@ -14826,14 +15256,22 @@ module.exports = Yaml;
 
       for (let cssRule of this.cssRules) {
         for (let stateConfigClass of stateConfigClasses) {
-          if (cssRule.selectorText && cssRule.selectorText.indexOf(`.${stateConfigClass}`) >= 0) {
+          if (
+            cssRule.selectorText &&
+            cssRule.selectorText.indexOf(`.${stateConfigClass}`) >= 0
+          ) {
             if (cssRule.style && cssRule.style.fill) {
-              if (cssRule.style.fill[0] === '#') {
+              if (cssRule.style.fill[0] === "#") {
                 fill = cssRule.style.fill;
-              }
-              else {
-                const rgb = cssRule.style.fill.substring(4).slice(0, -1).split(',').map(x => parseInt(x));
-                fill = `#${rgb[0].toString(16)}${rgb[1].toString(16)}${rgb[2].toString(16)}`;
+              } else {
+                const rgb = cssRule.style.fill
+                  .substring(4)
+                  .slice(0, -1)
+                  .split(",")
+                  .map((x) => parseInt(x));
+                fill = `#${rgb[0].toString(16)}${rgb[1].toString(
+                  16
+                )}${rgb[2].toString(16)}`;
               }
             }
 
@@ -14855,15 +15293,14 @@ module.exports = Yaml;
 
       return new Promise((resolve, reject) => {
         const request = new Request(resourceUrl, {
-          cache: (useCache === true) ? 'reload' : 'no-cache',
+          cache: useCache === true ? "reload" : "no-cache",
         });
 
         fetch(request)
           .then((response) => {
             if (response.ok) {
               return response.text();
-            }
-            else {
+            } else {
               throw new Error(`Error fetching resource`);
             }
           })
@@ -14880,20 +15317,25 @@ module.exports = Yaml;
 
       return new Promise((resolve, reject) => {
         const request = new Request(resourceUrl, {
-          cache: (useCache === true) ? 'reload' : 'no-cache',
-          headers: new Headers({ 'Content-Type': 'text/plain; charset=x-user-defined' }),
+          cache: useCache === true ? "reload" : "no-cache",
+          headers: new Headers({
+            "Content-Type": "text/plain; charset=x-user-defined",
+          }),
         });
 
         fetch(request)
           .then((response) => {
             if (response.ok) {
               return response.arrayBuffer();
-            }
-            else {
+            } else {
               throw new Error(`Error fetching resource`);
             }
           })
-          .then((result) => resolve(`data:image/jpeg;base64,${this.arrayBufferToBase64(result)}`))
+          .then((result) =>
+            resolve(
+              `data:image/jpeg;base64,${this.arrayBufferToBase64(result)}`
+            )
+          )
           .catch((err) => {
             reject(new URIError(`${resourceUrl}: ${err.message}`));
           });
@@ -14905,20 +15347,22 @@ module.exports = Yaml;
     /***************************************************************************************************************************/
 
     getArray(list) {
-      return Array.isArray(list) ? list : Object.keys(list).map(key => list[key]);
+      return Array.isArray(list)
+        ? list
+        : Object.keys(list).map((key) => list[key]);
     }
 
     arrayBufferToBase64(buffer) {
-      let binary = '';
+      let binary = "";
       const bytes = [].slice.call(new Uint8Array(buffer));
 
-      bytes.forEach((b) => binary += String.fromCharCode(b));
+      bytes.forEach((b) => (binary += String.fromCharCode(b)));
 
       let base64 = window.btoa(binary);
 
       // IOS / Safari will not render base64 images unless length is divisible by 4
-      while ((base64.length % 4) > 0) {
-        base64 += '=';
+      while (base64.length % 4 > 0) {
+        base64 += "=";
       }
 
       return base64;
@@ -14932,7 +15376,8 @@ module.exports = Yaml;
     debounce(func, wait, immediate) {
       let timeout;
       return function () {
-        const context = this, args = arguments;
+        const context = this,
+          args = arguments;
 
         const later = function () {
           timeout = null;
@@ -14950,9 +15395,9 @@ module.exports = Yaml;
     equal(a, b) {
       if (a === b) return true;
 
-      let arrA = Array.isArray(a)
-        , arrB = Array.isArray(b)
-        , i;
+      let arrA = Array.isArray(a),
+        arrB = Array.isArray(b),
+        i;
 
       if (arrA && arrB) {
         if (a.length != b.length) return false;
@@ -14963,17 +15408,17 @@ module.exports = Yaml;
 
       if (arrA != arrB) return false;
 
-      if (a && b && typeof a === 'object' && typeof b === 'object') {
+      if (a && b && typeof a === "object" && typeof b === "object") {
         const keys = Object.keys(a);
         if (keys.length !== Object.keys(b).length) return false;
 
-        const dateA = a instanceof Date
-          , dateB = b instanceof Date;
+        const dateA = a instanceof Date,
+          dateB = b instanceof Date;
         if (dateA && dateB) return a.getTime() == b.getTime();
         if (dateA != dateB) return false;
 
-        const regexpA = a instanceof RegExp
-          , regexpB = b instanceof RegExp;
+        const regexpA = a instanceof RegExp,
+          regexpB = b instanceof RegExp;
         if (regexpA && regexpB) return a.toString() == b.toString();
         if (regexpA != regexpB) return false;
 
@@ -14991,7 +15436,7 @@ module.exports = Yaml;
   }
 
   window.Floorplan = Floorplan;
-}).call(this);
+}.call(this));
 
 },{}],15:[function(require,module,exports){
 // $ Longclick Lib
