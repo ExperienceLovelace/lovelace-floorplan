@@ -92,16 +92,15 @@ automation:
 
 ## 3) Add to Lovelace
 
-If you're configuring the Lovelace interface with `ui-lovelace.yaml`, you know what to do.
+The sample configuration can be added directly in `ui-lovelace.yaml`, or by using the Home Assistant YAML-editor, if you're using the GUI to make changes to your lovelace-setup.
 
-If you're **not** configuring the Lovelace interface with the `ui-lovelace.yaml` file, you'll just need to do the following steps:
-- Click the top right hamburger menu
-- Select 'Configure UI'
-- Sleect the bottom right orange '+' circle
-- Click 'Manual'
-- Paste in YAML
+After doing so, you should see the Floorplan card in action! 🎉
 
-```
+### Using ui-lovelace.yaml
+
+If you're configuring the Lovelace interface with `ui-lovelace.yaml`, you know what to do. Here's the sample configuration:
+
+```yaml
   - cards:
       - config:
           image: /local/floorplan/examples/simple/simple.svg?v=1.1.14
@@ -167,4 +166,74 @@ If you're **not** configuring the Lovelace interface with the `ui-lovelace.yaml`
     title: Floorplan
 ```
 
-You should then see the Floorplan card in action!
+### Using the build in Lovelace YAML-editor in Home Assistant
+If you're **not** configuring the Lovelace interface with the `ui-lovelace.yaml` file, 
+
+You'll just need to do the following steps:
+- Click the top right hamburger menu
+- Select 'Configure UI'
+- Sleect the bottom right orange '+' circle
+- Click 'Manual'
+- Paste in YAML
+
+```yaml
+config:
+  image: /local/floorplan/examples/simple/simple.svg?v=1.1.14
+  log_level: error
+  rules:
+    - action:
+        service: homeassistant.toggle
+      element: light.double_garage
+      entity: light.double_garage
+      image_template: '/local/floorplan/examples/simple/light_${entity.state}.svg'
+      more_info: false
+    - action:
+        service: homeassistant.toggle
+      class_template: 'background-${entity.state}'
+      element: light.double_garage.background
+      entity: light.double_garage
+    - action:
+        service: homeassistant.toggle
+      element: light.double_garage.text
+      entity: light.double_garage
+      text_template: '${entity.state}'
+    - action:
+        service: homeassistant.toggle
+      entity: switch.living_area_fan
+      more_info: false
+    - entity: switch.living_area_fan
+      more_info: false
+      propagate: false
+      states:
+        - class: spinning
+          state: 'on'
+    - action:
+        service: homeassistant.toggle
+      class_template: 'background-${entity.state}'
+      element: switch.living_area_fan.background
+      entity: switch.living_area_fan
+    - action:
+        service: homeassistant.toggle
+      element: switch.living_area_fan.text
+      entity: switch.living_area_fan
+      text_template: '${entity.state}'
+    - entity: camera.new_york_broadway
+      image_refresh_interval: 5
+      image_template: '${entity.attributes.entity_picture}'
+    - entities:
+        - binary_sensor.main_bedroom
+        - binary_sensor.living_area
+        - binary_sensor.double_garage
+      state_transitions:
+        - duration: 5
+          from_state: 'on'
+          to_state: 'off'
+      states:
+        - class: binary-sensor-off
+          state: 'off'
+        - class: binary-sensor-on
+          state: 'on'
+  stylesheet: /local/floorplan/examples/simple/simple.css?v=1.1.14
+title: Simple Floorplan
+type: 'custom:floorplan-card'
+```
