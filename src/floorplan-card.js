@@ -1,11 +1,26 @@
 global.$ = require("jquery");
 var YAML = require("yamljs");
 
+// Package Information
+var packageInfo = require("./../package.json");
+
 // jQuery LongPress Plugin
 require("jquery.longpress");
 
 // Main Floorplan lib
 require("floorplan");
+
+import { localize } from "./localize/localize.ts";
+
+// Display our Card Version in console
+/* eslint no-console: 0 */
+console.info(
+  `%c  LOVELACE-FLOORPLAN CARD \n%c      ${localize("common.version")}    ${
+    packageInfo.version
+  }    `,
+  "color: orange; font-weight: bold; background: black",
+  "color: white; font-weight: bold; background: rgb(71, 170, 238)"
+);
 
 class FloorplanCard extends HTMLElement {
   constructor() {

@@ -1,212 +1,10 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 (function (global){(function (){
-global.$ = require("jquery");
-var YAML = require("yamljs");
-
-// jQuery LongPress Plugin
-require("jquery.longpress");
-
-// Main Floorplan lib
-require("floorplan");
-
-class FloorplanCard extends HTMLElement {
-  constructor() {
-    super();
-
-    this.version = "1.1.8";
-
-    this.isScriptsLoading = false;
-    this.isFloorplanLoading = false;
-
-    this.isFloorplanLoaded = false;
-
-    this.attachShadow({ mode: "open" });
-  }
-
-  setConfig(config) {
-    this.config = JSON.parse(JSON.stringify(config));
-
-    this.initCard(config);
-    this.setIsLoading(true);
-  }
-
-  set hass(hass) {
-    if (!this.config || this.isScriptsLoading || this.isFloorplanLoading)
-      return;
-
-    (this.isFloorplanLoaded
-      ? Promise.resolve()
-      : this.loadFloorplan(hass, this.config)
-    ).then(() => {
-      this.floorplan.hassChanged(hass);
-    });
-  }
-
-  loadFloorplan(hass, config) {
-    this.isFloorplanLoading = true;
-
-    const floorplan = new Floorplan();
-
-    const options = {
-      root: this.shadowRoot,
-      hass: hass,
-      openMoreInfo: this.openMoreInfo.bind(this),
-      setIsLoading: this.setIsLoading.bind(this),
-      config: (config && config.config) || config,
-    };
-
-    return floorplan.init(options).then(() => {
-      this.setIsLoading(false);
-      this.floorplan = floorplan;
-      this.isFloorplanLoading = false;
-      this.isFloorplanLoaded = true;
-    });
-  }
-
-  initCard(config) {
-    const root = this.shadowRoot;
-    if (root.lastChild) root.removeChild(root.lastChild);
-
-    const style = document.createElement("style");
-    style.textContent = this.getStyle();
-    root.appendChild(style);
-
-    const card = document.createElement("ha-card");
-    card.header = config.title;
-    root.appendChild(card);
-
-    const container = document.createElement("div");
-    container.id = "container";
-    card.appendChild(container);
-
-    const spinner = document.createElement("paper-spinner-lite");
-    container.appendChild(spinner);
-
-    const floorplan = document.createElement("div");
-    floorplan.id = "floorplan";
-    container.appendChild(floorplan);
-
-    const log = document.createElement("div");
-    log.id = "log";
-    container.appendChild(log);
-
-    const link = document.createElement("a");
-    link.setAttribute("href", "#");
-    link.text = "Clear log";
-    log.appendChild(link);
-    link.onclick = function () {
-      $(this).siblings("ul").html("").parent().css("display", "none");
-    };
-
-    const list = document.createElement("ul");
-    log.appendChild(list);
-
-    this.log = log;
-    this.spinner = spinner;
-  }
-
-  getStyle() {
-    return `
-      #container {
-        text-align: center;
-      }
-
-      paper-spinner-lite {
-        margin-bottom: 50px;
-      }
-
-      #log {
-        max-height: 150px;
-        overflow: auto;
-        background-color: #eee;
-        display: none;
-        padding: 10px;
-      }
-
-      #log ul {
-        list-style-type: none;
-        padding-left: 0px;
-        text-align: left;
-      }
-
-      .error {
-        color: #FF0000;
-      }
-
-      .warning {
-        color: #FF851B;
-      }
-
-      .info {
-        color: #0000FF;
-      }
-
-      .debug {
-        color: #000000;
-      }
-    `;
-  }
-
-  openMoreInfo(entityId) {
-    this.fire("hass-more-info", { entityId: entityId });
-  }
-
-  setIsLoading(isLoading) {
-    this.isLoading = isLoading;
-
-    if (this.isLoading) {
-      this.spinner.setAttribute("active", "");
-      this.spinner.style.display = "inline-block";
-    } else {
-      this.spinner.removeAttribute("active");
-      this.spinner.style.display = "none";
-    }
-  }
-
-  logError(message) {
-    console.error(message);
-
-    $(this.log).find("ul").prepend(`<li class="error">${message}</li>`);
-    $(this.log).css("display", "block");
-  }
-
-  fire(type, detail, options) {
-    options = options || {};
-    detail = detail === null || detail === undefined ? {} : detail;
-    const event = new Event(type, {
-      bubbles: options.bubbles === undefined ? true : options.bubbles,
-      cancelable: Boolean(options.cancelable),
-      composed: options.composed === undefined ? true : options.composed,
-    });
-    event.detail = detail;
-    const node = options.node || this;
-    node.dispatchEvent(event);
-    return event;
-  }
-
-  loadScript(scriptUrl, useCache) {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.async = true;
-      script.src = useCache ? scriptUrl : this.cacheBuster(scriptUrl);
-      script.onload = () => resolve();
-      script.onerror = (err) => reject(new URIError(`${err.target.src}`));
-      this.appendChild(script);
-    });
-  }
-
-  cacheBuster(url) {
-    return `${url}${
-      url.indexOf("?") >= 0 ? "&" : "?"
-    }_=${new Date().getTime()}`;
-  }
-}
-
-customElements.define("floorplan-card", FloorplanCard);
+var e={version:"Version",description:"Floorplan for Lovelace"},n={common:e};const o={en:Object.freeze({__proto__:null,common:e,default:n})};global.$=require("jquery");require("yamljs");var t=require("./../package.json");require("jquery.longpress"),require("floorplan"),console.info(`%c  LOVELACE-FLOORPLAN CARD \n%c      ${function(e,n="",t=""){const i=e.split(".")[0],s=e.split(".")[1],r=(localStorage.getItem("selectedLanguage")||navigator.language.split("-")[0]||"en").replace(/['"]+/g,"").replace("-","_");let l;try{l=o[r][i][s]}catch(e){l=o.en[i][s]}return void 0===l&&(l=o.en[i][s]),""!==n&&""!==t&&(l=l.replace(n,t)),l}("common.version")}    ${t.version}    `,"color: orange; font-weight: bold; background: black","color: white; font-weight: bold; background: rgb(71, 170, 238)");class i extends HTMLElement{constructor(){super(),this.version="1.1.8",this.isScriptsLoading=!1,this.isFloorplanLoading=!1,this.isFloorplanLoaded=!1,this.attachShadow({mode:"open"})}setConfig(e){this.config=JSON.parse(JSON.stringify(e)),this.initCard(e),this.setIsLoading(!0)}set hass(e){!this.config||this.isScriptsLoading||this.isFloorplanLoading||(this.isFloorplanLoaded?Promise.resolve():this.loadFloorplan(e,this.config)).then((()=>{this.floorplan.hassChanged(e)}))}loadFloorplan(e,n){this.isFloorplanLoading=!0;const o=new Floorplan,t={root:this.shadowRoot,hass:e,openMoreInfo:this.openMoreInfo.bind(this),setIsLoading:this.setIsLoading.bind(this),config:n&&n.config||n};return o.init(t).then((()=>{this.setIsLoading(!1),this.floorplan=o,this.isFloorplanLoading=!1,this.isFloorplanLoaded=!0}))}initCard(e){const n=this.shadowRoot;n.lastChild&&n.removeChild(n.lastChild);const o=document.createElement("style");o.textContent=this.getStyle(),n.appendChild(o);const t=document.createElement("ha-card");t.header=e.title,n.appendChild(t);const i=document.createElement("div");i.id="container",t.appendChild(i);const s=document.createElement("paper-spinner-lite");i.appendChild(s);const r=document.createElement("div");r.id="floorplan",i.appendChild(r);const l=document.createElement("div");l.id="log",i.appendChild(l);const a=document.createElement("a");a.setAttribute("href","#"),a.text="Clear log",l.appendChild(a),a.onclick=function(){$(this).siblings("ul").html("").parent().css("display","none")};const c=document.createElement("ul");l.appendChild(c),this.log=l,this.spinner=s}getStyle(){return"\n      #container {\n        text-align: center;\n      }\n\n      paper-spinner-lite {\n        margin-bottom: 50px;\n      }\n\n      #log {\n        max-height: 150px;\n        overflow: auto;\n        background-color: #eee;\n        display: none;\n        padding: 10px;\n      }\n\n      #log ul {\n        list-style-type: none;\n        padding-left: 0px;\n        text-align: left;\n      }\n\n      .error {\n        color: #FF0000;\n      }\n\n      .warning {\n        color: #FF851B;\n      }\n\n      .info {\n        color: #0000FF;\n      }\n\n      .debug {\n        color: #000000;\n      }\n    "}openMoreInfo(e){this.fire("hass-more-info",{entityId:e})}setIsLoading(e){this.isLoading=e,this.isLoading?(this.spinner.setAttribute("active",""),this.spinner.style.display="inline-block"):(this.spinner.removeAttribute("active"),this.spinner.style.display="none")}logError(e){console.error(e),$(this.log).find("ul").prepend(`<li class="error">${e}</li>`),$(this.log).css("display","block")}fire(e,n,o){o=o||{},n=null==n?{}:n;const t=new Event(e,{bubbles:void 0===o.bubbles||o.bubbles,cancelable:Boolean(o.cancelable),composed:void 0===o.composed||o.composed});t.detail=n;return(o.node||this).dispatchEvent(t),t}loadScript(e,n){return new Promise(((o,t)=>{const i=document.createElement("script");i.async=!0,i.src=n?e:this.cacheBuster(e),i.onload=()=>o(),i.onerror=e=>t(new URIError(`${e.target.src}`)),this.appendChild(i)}))}cacheBuster(e){return`${e}${e.indexOf("?")>=0?"&":"?"}_=${(new Date).getTime()}`}}customElements.define("floorplan-card",i);
 
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"floorplan":14,"jquery":2,"jquery.longpress":15,"yamljs":13}],2:[function(require,module,exports){
+},{"./../package.json":14,"floorplan":15,"jquery":2,"jquery.longpress":16,"yamljs":13}],2:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.5.1
  * https://jquery.com/
@@ -12973,6 +12771,63 @@ if (typeof window === "undefined" || window === null) {
 module.exports = Yaml;
 
 },{"./Dumper":3,"./Parser":9,"./Utils":12}],14:[function(require,module,exports){
+module.exports={
+  "name": "lovelace-floorplan",
+  "version": "1.0.0",
+  "description": "Floorplan for Lovelace-cards (Home Assistant)",
+  "main": "floorplan-card.js",
+  "directories": {
+    "example": "examples",
+    "lib": "lib"
+  },
+  "scripts": {
+    "start": "rollup -c --watch",
+    "build": "npm run lint && npm run rollup && npm run browserify",
+    "browserify": "browserify dist/floorplan-card.js -o dist/floorplan-card.js",
+    "lint": "eslint src/*.js --fix",
+    "rollup": "rollup -c -m"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pkozul/lovelace-floorplan.git"
+  },
+  "keywords": [
+    "floorplan",
+    "lovelace",
+    "homeassistant",
+    "hacs"
+  ],
+  "author": "pkozul, exetico",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pkozul/lovelace-floorplan/issues"
+  },
+  "homepage": "https://github.com/pkozul/lovelace-floorplan#readme",
+  "dependencies": {
+    "jquery": "^3.5.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-json": "^4.1.0",
+    "@typescript-eslint/eslint-plugin": "^4.8.2",
+    "@typescript-eslint/parser": "^4.8.2",
+    "browserify": "^17.0.0",
+    "eslint": "^7.12.1",
+    "js": "^0.1.0",
+    "prettier": "^2.1.2",
+    "rollup": "^2.33.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.29.0",
+    "typescript": "^4.0.5"
+  },
+  "browser": {
+    "jquery.longpress": "./src/lib/jquery.longpress",
+    "floorplan": "./src/lib/floorplan"
+  }
+}
+
+},{}],15:[function(require,module,exports){
 (function () {
   if (typeof window.Floorplan === "function") return;
 
@@ -13440,7 +13295,6 @@ module.exports = Yaml;
           .addClass("ha-entity");
 
         if (rule && rule.long_click) {
-          console.log("Hej1113");
           $(svgElement).mayTriggerLongClicks().off("longClick");
           $(svgElement)
             .mayTriggerLongClicks()
@@ -13775,7 +13629,6 @@ module.exports = Yaml;
             $svgElement.css("cursor", "pointer");
           }
           if (ruleInfo.rule.long_click) {
-            console.log("Hej1112");
             $svgElement
               .mayTriggerLongClicks()
               .off("longClick")
@@ -13918,7 +13771,6 @@ module.exports = Yaml;
             );
           $svgElement.css("cursor", "pointer");
           if (ruleInfo.rule.long_click) {
-            console.log("Hej1113");
             $svgElement.mayTriggerLongClicks().off("longClick");
             $svgElement.mayTriggerLongClicks().on(
               "longClick",
@@ -14879,7 +14731,6 @@ module.exports = Yaml;
     longClick(e) {
       var modifiedRule = null;
       if (this.rule.long_click && this.rule.long_click.service) {
-        console.log("Hej1114");
         modifiedRule = JSON.parse(JSON.stringify(this.rule));
 
         // Create the action-object, if it's not defined (to support longClick without action)
@@ -14902,7 +14753,6 @@ module.exports = Yaml;
     }
 
     onEntityLongClick(e) {
-      console.log("Hej1115");
       e.stopPropagation();
       e.preventDefault();
       setTimeout(this.instance.longClick.bind(this, e), 300);
@@ -15438,7 +15288,7 @@ module.exports = Yaml;
   window.Floorplan = Floorplan;
 }.call(this));
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 // $ Longclick Lib
 //
 // Details: Function to enable long clicks in floorplan
