@@ -64,8 +64,8 @@ Note: If you're using the Lovelace editor that is built into the user interface,
 
 To get started with some fully working examples, try some of the floorplans below:
 
-- [Simple Floorplan](https://github.com/pkozul/lovelace-floorplan/tree/master/www/floorplan/examples/simple)
-- [Ring doorbell](https://github.com/pkozul/lovelace-floorplan/tree/master/www/floorplan/examples/ring)
+- [Simple Floorplan](https://github.com/ExperienceLovelace/lovelace-floorplan/tree/master/examples/simple)
+- [Ring doorbell](https://github.com/ExperienceLovelace/lovelace-floorplan/tree/master/examples/ring)
 
 
 ### Options
