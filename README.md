@@ -1,3 +1,16 @@
+<table align="center">
+<tr>
+<td>
+<h1 align="center">
+⚠️ Please move to <a href="https://github.com/ExperienceLovelace/ha-floorplan"><b>ha-floorplan</b></a> ⚠️ 
+</h1>
+<p align="center">
+lovelace-floorplan has been replaced with <a href="https://github.com/ExperienceLovelace/ha-floorplan"><b>ha-floorplan</b></a>.<br><br>Please check out the new solution, and let us know what you think.<br><br>
+</p>
+</td>
+</tr>
+</table>
+
 # lovelace-floorplan
 
 Floorplan for Lovelace is here!
